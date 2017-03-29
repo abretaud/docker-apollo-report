@@ -74,7 +74,7 @@ else {
 <?php endforeach; ?>
 
 
-<?php if ($is_admin && (getenv("DETAILED_REPORT") == "1"): ?>
+<?php if ($is_admin && (getenv("DETAILED_REPORT") == "1")): ?>
     <h2>Splitted genes:</h2><ul>
 
     <?php foreach ($report['splitted'] as $gene => $parts): ?>

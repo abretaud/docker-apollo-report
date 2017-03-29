@@ -15,6 +15,7 @@ RUN set -x \
 ENTRYPOINT ["/usr/local/bin/tini", "--"]
 
 WORKDIR /var/www
+RUN chmod a+rx /var/www
 
 VOLUME ["/data/report/"]
 
@@ -43,7 +44,7 @@ ENV APOLLO_URL="http://apollo:8080/" \
 
 ADD entrypoint.sh /
 ADD ./scripts/ /scripts/
-ADD ./report_viewer/index.php /var/www/index.php
+ADD ./report_viewer/index.php /var/www/html/index.php
 ADD ./apollo_checker/ /opt/apollo_checker/
 
 CMD ["/entrypoint.sh"]
