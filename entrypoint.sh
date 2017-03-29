@@ -14,6 +14,8 @@ function run_scripts () {
 	fi
 }
 
+: ${APOLLO_EXT_URL:='$APOLLO_URL'}
+
 run_scripts pre-launch
 
 exec apache2-foreground

@@ -1,7 +1,12 @@
 chown -R root: /data/report/
 chmod a+x /data/report/
 
-echo "@daily (bash -lc '/opt/apollo_checker/report.sh ${APOLLO_URL} /data/genome.fa /data/report/')" > cron
+# Update the report if not existing yet
+if [ ! -f /data/report/full_report.json ]; then
+    /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
+fi
+
+echo "@daily (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/')" > cron
 crontab cron && rm cron
 
 service cron start

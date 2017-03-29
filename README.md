@@ -12,7 +12,8 @@ services:
   report:
     image: quay.io/abretaud/apollo-report:latest
     environment:
-        APOLLO_URL: http://example.org/somewhere/apollo/ # Full URL to the Apollo server
+        APOLLO_URL: http://apollo:8080/ # Full URL to the Apollo server
+        APOLLO_EXT_URL: http://example.org/somewhere/apollo/ # Full URL to the Apollo server, accessible from anywhere (default= APOLLO_URL)
         APOLLO_USER: admin@apollo # Admin account to connect to apollo
         APOLLO_PASS: password # Password to connect to apollo
         ADMIN_USERS: userx@apollo,usery@apollo # Set this to a list of users who will have access to all the data from all users.
@@ -28,7 +29,8 @@ services:
 The following environment variables are also available:
 
 ```
-APOLLO_URL: http://example.org/somewhere/apollo/ # Full URL to the Apollo server
+APOLLO_URL: http://apollo:8080/ # Full URL to the Apollo server, accessible from the container
+APOLLO_EXT_URL: http://example.org/somewhere/apollo/ # Full URL to the Apollo server, accessible from anywhere (default= APOLLO_URL)
 APOLLO_USER: admin@apollo # Admin account to connect to apollo
 APOLLO_PASS: password # Password to connect to apollo
 ADMIN_USERS: userx@apollo,usery@apollo # Set this to a list of users who will have access to all the data from all users.

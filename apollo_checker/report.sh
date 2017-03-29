@@ -3,9 +3,10 @@
 set -u # stop if a variable is not initialized
 set -e # stop in case of error
 
-wa_url=$1 # Url of the Apollo server (with or without trailing slash)
-genome=$2 # Path to the genome fasta file
-output_dir=$3 # Directory where generated fils should be placed
+wa_url=${1%/} # Url of the Apollo server (trim trailing slash)
+wa_ext_url=${2%/} # Url of the Apollo server (trim trailing slash)
+genome=$3 # Path to the genome fasta file
+output_dir=$4 # Directory where generated fils should be placed
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -17,16 +18,13 @@ cur_date=`date +%F_%X`
 
 cd "$tmp_dir"
 
-# Login to the server
-curl -b "$tmp_dir/cookies.txt" -c "$tmp_dir/cookies.txt" -H "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/Login?operation=login"
-
 # Create the gz file on the server
-res=`curl -b "$tmp_dir/cookies.txt" -c "$tmp_dir/cookies.txt" -d data="{'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'sequences':[]}" "$wa_url/IOService/write"`
+res=`curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'sequences':[]}" "$wa_url/IOService/write"`
 
 uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
 
 # Download the gz file
-curl -b "$tmp_dir/cookies.txt" -c "$tmp_dir/cookies.txt" -o "$raw_apollo_gff_gz" "$wa_url/IOService/download?uuid=$uuid&format=gzip&seqType=genomic&exportType=GFF3"
+curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" -o "$raw_apollo_gff_gz" "$wa_url/IOService/download?uuid=$uuid&format=gzip&seqType=genomic&exportType=GFF3"
 
 # Unzip the annotation file
 gunzip "$raw_apollo_gff_gz"
