@@ -118,13 +118,13 @@ class HtmlReport(Report):
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has an unknown dbxref type: '"+w.error_desc['dbxref']+"'."
 
         if w.code == GeneError.GROUP_MISPLACED:
-            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> have "+w.error_desc['tag']+" as a gene attribute instead of a DBXref."
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> have "+w.error_desc['tag']+" as a gene DBXref instead of a attribute."
 
         if w.code == GeneError.GROUP_UNKNOWN:
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is in an unknown "+self.group_tags[0]+" group '"+w.error_desc['group']+"' (check the spelling)."
 
         if w.code == GeneError.GROUP_NONE:
-            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is not in any group (add an "+self.group_tags[0]+" DBXref)."
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if w.code == GeneError.GROUP_MULTIPLE:
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."

@@ -56,7 +56,7 @@ class TextReport(Report):
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is in an unknown "+self.group_tags[0]+" group '"+e.error_desc['group']+"' (check the spelling)."
 
         if e.code == GeneError.GROUP_NONE:
-            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is not in any group (add an "+self.group_tags[0]+" DBXref)."
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if e.code == GeneError.GROUP_MULTIPLE:
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."
