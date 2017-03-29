@@ -118,13 +118,13 @@ class TextReport(Report):
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has an unknown dbxref type: '"+w.error_desc['dbxref']+"'."
 
         if w.code == GeneError.GROUP_MISPLACED:
-            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" have "+w.error_desc['tag']+" as a gene attribute instead of a DBXref."
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" have "+w.error_desc['tag']+" as a gene DBXref instead of an attribute."
 
         if w.code == GeneError.GROUP_UNKNOWN:
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is in an unknown "+self.group_tags[0]+" group '"+w.error_desc['group']+"' (check the spelling)."
 
         if w.code == GeneError.GROUP_NONE:
-            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is not in any group (add an "+self.group_tags[0]+" DBXref)."
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if w.code == GeneError.GROUP_MULTIPLE:
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."

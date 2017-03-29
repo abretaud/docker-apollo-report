@@ -61,14 +61,14 @@ class UserHtmlReport(HtmlReport):
 
         res += """<p>Briefly:</p>
         <ul>"""
-        res += "<li>each gene should have an "+self.group_tags[0]+" DBXref with the name of an annotation groups as written in the wiki.</li>"
+        res += "<li>each gene should have an "+self.group_tags[0]+" attribute with the name of an annotation groups as written in the wiki.</li>"
 
         res += """<li>Each gene should have a 'Symbol' (short name without spaces and special characters), and a 'Name' (long human readable name).</li>
         <li>Heterozyous alleles should have an "Allele" tag with values "A", "B", "C", and so on. Every alleles of a same gene should have the same 'Symbol'.</li>
         <li>In case of genes spread on multiple scaffolds, each part should have a "Part" tag with values "1", "2", "3", and so on. Every part of a same gene should have the same 'Symbol'.</li>
         </ul>"""
 
-        res += "<p>When the error comment \"is not in any group (add an "+self.group_tags[0]+" DBXref)\" is found, it means that the annotator forgot to mention their annotation group when annotating their genes. In order to correct, please refer to the wiki, guidelines for annotation, manual curation process, register your gene. In case you do not find the right keyword in the current annotation group list, please let us know what keyword you suggest, we may add new groups names in the list.</p>"
+        res += "<p>When the error comment \"is not in any group (add an "+self.group_tags[0]+" attribute)\" is found, it means that the annotator forgot to mention their annotation group when annotating their genes. In order to correct, please refer to the wiki, guidelines for annotation, manual curation process, register your gene. In case you do not find the right keyword in the current annotation group list, please let us know what keyword you suggest, we may add new groups names in the list.</p>"
 
         if self.ok and u in self.ok:
             res += "<p><p>For your information, you have already properly anotated the following "+str(len(self.ok[u]))+" genes:</p>\n\n"

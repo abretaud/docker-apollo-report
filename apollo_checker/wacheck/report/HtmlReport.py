@@ -56,7 +56,7 @@ class HtmlReport(Report):
             return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is in an unknown "+self.group_tags[0]+" group '"+e.error_desc['group']+"' (check the spelling)."
 
         if e.code == GeneError.GROUP_NONE:
-            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is not in any group (add an "+self.group_tags[0]+" DBXref)."
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if e.code == GeneError.GROUP_MULTIPLE:
             return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."
