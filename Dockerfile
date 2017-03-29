@@ -15,7 +15,6 @@ RUN set -x \
 ENTRYPOINT ["/usr/local/bin/tini", "--"]
 
 WORKDIR /var/www
-RUN chmod a+rx /var/www
 
 VOLUME ["/data/report/"]
 
