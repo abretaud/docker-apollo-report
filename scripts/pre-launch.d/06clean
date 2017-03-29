@@ -2,4 +2,6 @@
 rm -f /data/genome.fai
 
 # Make sure at least an empty file exists for groups
-touch /data/annotation_groups.tsv
+if [ ! -f /data/annotation_groups.tsv ]; then
+    touch /data/annotation_groups.tsv
+fi
