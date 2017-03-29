@@ -1,0 +1,3 @@
+chown -R ${APACHE_RUN_USER}:${APACHE_RUN_GROUP} /var/www/ || echo
+find /var/www/ -type d -exec chmod u=rwx,g=rx,o= '{}' \; || echo
+find /var/www/ -type f -exec chmod u=rw,g=r,o= '{}' \; || echo

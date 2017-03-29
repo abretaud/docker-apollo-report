@@ -1,0 +1,7 @@
+chown -R root: /data/report/
+chmod a+x /data/report/
+
+echo "@daily (bash -lc '/opt/apollo_checker/report.sh ${APOLLO_URL} /data/genome.fa /data/report/')" > cron
+crontab cron && rm cron
+
+service cron start

@@ -1,0 +1,8 @@
+if [ -n "$VIRTUAL_HOST" ]; then
+	if [ -z "$SERVERNAME" ]; then
+		SERVERNAME=$(echo "$VIRTUAL_HOST" | cut -f 1 -d ,)
+	fi
+fi
+
+: "${SERVERNAME:=$(cat /etc/hostname)}"
+echo ServerName "${SERVERNAME}" >> /etc/apache2/apache2.conf

@@ -1,0 +1,5 @@
+# Remove any existing fasta index in case the fasta file changed
+rm -f /data/genome.fai
+
+# Make sure at least an empty file exists for groups
+touch /data/annotation_groups.tsv
