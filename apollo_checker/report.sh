@@ -42,7 +42,7 @@ fi
 
 # Launch the script to check gene models
 python $SCRIPT_DIR/apollo_checker.py \
-    -a "$wa_url" \
+    -a "$wa_ext_url" \
     -o "$output_dir/valid.gff" \
     -i "$output_dir/invalid.gff" \
     --report_admin_json "$output_dir/full_report.json" \
