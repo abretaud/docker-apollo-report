@@ -24,6 +24,8 @@ services:
       - "3000:80"
 ```
 
+A cron task is configured to generate the report every day. You can consult the script error log by looking at /var/log/apollo_report.log.
+
 ## Configuring the Container
 
 The following environment variables are also available:

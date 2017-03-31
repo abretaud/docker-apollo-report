@@ -6,7 +6,7 @@ if [ ! -f /data/report/full_report.json ]; then
     /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
 fi
 
-echo "@daily (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/')" > cron
+echo "@daily    (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/ 2>> /var/log/apollo_report.log')" > cron
 crontab cron && rm cron
 
 service cron start
