@@ -169,8 +169,12 @@ class Gene:
     def check_groups(self):
 
         for tag in self.group_tags:
-            if tag in self.f.qualifiers:
-                for group in self.f.qualifiers[tag]:
+
+            # In gff, the attribute will have a lowercase first letter
+            gff_tag = tag[0].lower() + tag[1:]
+
+            if gff_tag in self.f.qualifiers:
+                for group in self.f.qualifiers[gff_tag]:
 
                     group = self.check_group(group)
 
