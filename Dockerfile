@@ -21,7 +21,7 @@ VOLUME ["/data/report/"]
 # Install packages and PHP-extensions
 RUN apt-get -q update && \
     DEBIAN_FRONTEND=noninteractive apt-get -yq --no-install-recommends install \
-    wget git cron python-pip python-dev \
+    wget git cron python-pip python-dev python-numpy \
  && rm -rf /var/lib/apt/lists/*
 
 # Install gffread
@@ -30,7 +30,7 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
  && cp cufflinks-2.2.1.Linux_x86_64/gffread /usr/bin/gffread \
  && rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz cufflinks-2.2.1.Linux_x86_64
 
-RUN pip install bcbio-gff numpy biopython
+RUN pip install bcbio-gff biopython
 
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
