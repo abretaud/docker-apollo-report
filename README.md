@@ -1,5 +1,7 @@
 # Docker Image for Apollo annotation reports
 
+[![Docker Repository on Quay](https://quay.io/repository/abretaud/apollo-report/status "Docker Repository on Quay")](https://quay.io/repository/abretaud/apollo-report)
+
 This image contains everything needed to generate an Apollo per-user report each day, with rules defined at http://bipaa.genouest.org/.
 
 ## Using the Container
