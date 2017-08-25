@@ -8,16 +8,16 @@ class HtmlReport(Report):
     def render_wa_error(self, e):
 
         if e.code == WAError.UNEXPECTED_FEATURE:
-            return "ERROR: unexpected feature <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.gene.wa_id+"</a> of type '"+e.gene.f.type+"'"
+            return "Unexpected '"+e.gene.f.type+"' feature <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.gene.wa_id+"</a>, it will not be used in future OGS."
+
+        if e.code == WAError.UNEXPECTED_SUB_FEATURE:
+            return "unexpected '"+e.error_desc['child_type']+"' sub-element <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.error_desc['child_id']+"</a> for gene '"+e.gene.wa_id+"'"
 
         if e.code == WAError.OUTSIDE_SCAFFOLD_START:
             return "ERROR: "+e.gene.wa_id+" start position "+str(e.start)+" is higher than the scaffold size "+str(e.gene.scaffold_size)
 
         if e.code == WAError.OUTSIDE_SCAFFOLD_END:
             return "ERROR: "+e.gene.wa_id+" end position "+str(e.end)+" is higher than the scaffold size "+str(e.gene.scaffold_size)
-
-        if e.code == WAError.UNEXPECTED_SUB_FEATURE:
-            return "ERROR: unexpected element <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.error_desc['child_id']+"</a> of type '"+e.error_desc['child_type']+"' for gene '"+e.gene.wa_id+"'"
 
         if e.code == WAError.MULTIPLE_SUB_FEATURE:
             return "ERROR: multiple child element ("+str(e.error_desc['num_children'])+") for gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.gene.wa_id+"</a>"
@@ -59,7 +59,7 @@ class HtmlReport(Report):
             return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if e.code == GeneError.GROUP_MULTIPLE:
-            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is in multiple annotations groups: '"+"', '".join(e.gene.groups)+"'."
 
         if e.code == GeneError.GROUP_MULTIPLE_SAME:
             return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has been added to the same annotation group '"+e.error_desc['group']+"' multiple times."
@@ -88,6 +88,23 @@ class HtmlReport(Report):
         if e.code == GeneError.NEEDS_REVIEW:
             return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> is not yet Approved. Change its status once you have finished working on it."
 
+        if e.code == GeneError.INVALID_MRNA_NAME:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has invalid name for its isoforms. Each isoform should be named '<name of the gene> X', where X is a letter (from A to Z)  (e.g. : gluthatione s-transferase A)."
+
+        if e.code == GeneError.SIMILAR_TO:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> contains 'similar to' or '-like' in its name. Use 'putative' instead, and only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if e.code == GeneError.SYMBOL_NOT_ID:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has an invalid symbol: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if e.code == GeneError.NAME_NOT_ID:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has an invalid name: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if e.code == GeneError.SYMBOL_NOT_UNIQUE:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has a symbol which is not unique."
+
+        if e.code == GeneError.NAME_NOT_UNIQUE:
+            return "Gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.display_id+"</a> has a name which is not unique."
         return "Unexpected error %s" % e.code
 
 
@@ -112,7 +129,7 @@ class HtmlReport(Report):
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is missing a 'Name'."
 
         if w.code == GeneError.NAME_INVALID:
-            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> should have a human readable 'Name' instead of '"+e.error_desc['name']+"'."
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> should have a human readable 'Name' instead of '"+w.error_desc['name']+"'."
 
         if w.code == GeneError.DBXREF_UNKNOWN:
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has an unknown dbxref type: '"+w.error_desc['dbxref']+"'."
@@ -153,8 +170,26 @@ class HtmlReport(Report):
         if w.code == GeneError.INTRON_TOO_SMALL:
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> contains very short introns. This is not supposed to happen on most genes, check that the gene structure is correct."
 
-        if e.code == GeneError.NEEDS_REVIEW:
+        if w.code == GeneError.NEEDS_REVIEW:
             return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> is not yet Approved. Change its status once you have finished working on it."
+
+        if w.code == GeneError.PUTATIVE:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> contains 'putative' in its name. Use this only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if w.code == GeneError.SIMILAR_TO:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> contains 'similar to' or '-like' in its name. Use 'putative' instead, and only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if w.code == GeneError.SYMBOL_NOT_ID:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has an invalid symbol: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if w.code == GeneError.NAME_NOT_ID:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has an invalid name: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if w.code == GeneError.SYMBOL_NOT_UNIQUE:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has a symbol which is not unique."
+
+        if w.code == GeneError.NAME_NOT_UNIQUE:
+            return "Gene <a href=\""+self.get_wa_url(w.scaffold, w.start, w.end)+"\">"+w.display_id+"</a> has a name which is not unique."
 
         return "Unexpected warning %s" % w.code
 

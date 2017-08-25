@@ -39,6 +39,7 @@ ENV APOLLO_URL="http://apollo:8080/" \
     DETAILED_REPORT=0 \
     ANNOTATION_GROUPS=1 \
     SPLIT_USERS=1 \
+    LOCAL_ONLY=0 \
     REPORT_JSON_PATH=/data/report/full_report.json
 
 ADD entrypoint.sh /

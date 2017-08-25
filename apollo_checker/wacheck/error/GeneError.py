@@ -21,6 +21,13 @@ class GeneError:
     ALLELE_SINGLE = 19
     INTRON_TOO_SMALL = 20
     NEEDS_REVIEW = 21
+    INVALID_MRNA_NAME = 22
+    SIMILAR_TO = 23
+    PUTATIVE = 24
+    SYMBOL_NOT_ID = 25
+    NAME_NOT_ID = 26
+    SYMBOL_NOT_UNIQUE = 27
+    NAME_NOT_UNIQUE = 28
 
     def __init__(self, code, gene, error_desc = {}):
 

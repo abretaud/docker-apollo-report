@@ -12,6 +12,10 @@ class Gene:
         self.scaffold_size = scaffold_size
         self.wa_id = f.qualifiers['ID'][0]
         self.display_id = self.wa_id
+
+        self.symbol = None
+        self.name = None
+
         # Remove the @something suffix from owner names
         if split_users:
             self.owner = re.sub(r"^(.+)@[a-zA-Z0-9]+$", r"\1", self.get_tag_value('owner'))
@@ -86,6 +90,12 @@ class Gene:
             if not re.match("^[A-Za-z0-9-_.()/]+$", symbol) :
                 self.errors.append(GeneError(GeneError.SYMBOL_INVALID, self, {'symbol': symbol}))
 
+            elif re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", symbol) :
+                self.errors.append(GeneError(GeneError.SYMBOL_NOT_ID, self, {'symbol': symbol}))
+
+            else:
+                self.symbol = self.f.qualifiers['symbol'][0].strip()
+
 
     def check_sub_features(self):
 
@@ -104,7 +114,17 @@ class Gene:
             if not foundOverlap:
                 self.wa_errors.append(WAError(WAError.MULTIPLE_SUB_FEATURE, self, {'num_children': len(self.f.sub_features)}))
             else:
-                self.warnings.append(GeneError(GeneError.MULTIPLE_MRNAS, self, {'num': len(self.f.sub_features)}))
+                self.check_multiple_mrnas()
+
+    def check_multiple_mrnas(self):
+
+        if len(self.f.sub_features) > 1:
+            gene_name = self.f.qualifiers['ID'][0]
+            for child in self.f.sub_features:
+                if child.type == "mRNA":
+                    if len(child.qualifiers['ID'][0]) < len(gene_name) or not child.qualifiers['ID'][0].startswith(gene_name) or re.match("^ [A-F]{1,2}$", child.qualifiers['ID'][0][len(gene_name):]):
+                        self.errors.append(GeneError(GeneError.INVALID_MRNA_NAME, self, {'gene_name': gene_name}))
+
 
     def check_intron(self):
 
@@ -156,6 +176,20 @@ class Gene:
             name = self.f.qualifiers['Name'][0].strip()
             if len(name) == 32 and re.match("^[A-F0-9]+$", name):
                 self.errors.append(GeneError(GeneError.NAME_INVALID, self, {'name': name}))
+
+            elif 'putative' in name.lower():
+                self.warnings.append(GeneError(GeneError.PUTATIVE, self, {'name': name}))
+            elif 'similar to' in name.lower():
+                self.errors.append(GeneError(GeneError.SIMILAR_TO, self, {'name': name}))
+            elif '-like' in name.lower():
+                self.warnings.append(GeneError(GeneError.SIMILAR_TO, self, {'name': name}))
+
+            elif re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", name):
+                if (not self.apollo_1x) and ('status' not in self.f.qualifiers or (self.f.qualifiers['status'][0].lower() != "deleted")):
+                    self.errors.append(GeneError(GeneError.NAME_NOT_ID, self, {'name': name}))
+
+            else:
+                self.name = self.f.qualifiers['Name'][0].strip()
 
 
     def check_group(self, group):

@@ -7,8 +7,8 @@ class TextReport(Report):
 
     def render_wa_error(self, e):
 
-        if e.code == WAError.UNEXPECTED_FEATURE:
-            return "ERROR: unexpected feature of type '"+e.gene.f.type+"' (ID="+e.gene.wa_id+") located at "+self.get_wa_url(e.scaffold, e.start, e.end)
+        if e.code == WAError.UNEXPECTED_FEATURE: # Can be pseudogene, transposable_element, insertion, ...
+            return "ERROR: unexpected feature of type '"+e.gene.f.type+"' (ID="+e.gene.wa_id+") located at "+self.get_wa_url(e.scaffold, e.start, e.end)+". Only genes and mRNA will be used for OGS generation"
 
         if e.code == WAError.OUTSIDE_SCAFFOLD_START:
             return "ERROR: "+e.gene.wa_id+" start position "+str(e.start)+" is higher than the scaffold size "+str(e.gene.scaffold_size)
@@ -16,11 +16,11 @@ class TextReport(Report):
         if e.code == WAError.OUTSIDE_SCAFFOLD_END:
             return "ERROR: "+e.gene.wa_id+" end position "+str(e.end)+" is higher than the scaffold size "+str(e.gene.scaffold_size)
 
-        if e.code == WAError.UNEXPECTED_SUB_FEATURE:
-            return "ERROR: unexpected element '"+e.error_desc['child_id']+"' of type '"+e.error_desc['child_type']+"' for gene '"+e.gene.wa_id+"' located at "+self.get_wa_url(e.scaffold, e.start, e.end)
+        if e.code == WAError.UNEXPECTED_SUB_FEATURE: # Can be ncRNA
+            return "WARNING: unexpected element '"+e.error_desc['child_id']+"' of type '"+e.error_desc['child_type']+"' for gene '"+e.gene.wa_id+"' located at "+self.get_wa_url(e.scaffold, e.start, e.end)+". Only mRNAs will be used for OGS generation."
 
         if e.code == WAError.MULTIPLE_SUB_FEATURE:
-            return "ERROR: multiple child element ("+str(e.error_desc['num_children'])+") for gene '"+e.gene.wa_id+"' located at "+self.get_wa_url(e.scaffold, e.start, e.end)
+            return "ERROR: multiple child element ("+str(e.error_desc['num_children'])+") for gene '"+e.gene.wa_id+"' located at "+self.get_wa_url(e.scaffold, e.start, e.end+". This is not supposed to happen in Apollo 2!")
 
 
     def render_error(self, e):
@@ -59,7 +59,7 @@ class TextReport(Report):
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is not in any group (add an "+self.group_tags[0]+" attribute)."
 
         if e.code == GeneError.GROUP_MULTIPLE:
-            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is in multiple annotations groups: '"+"', '".join(w.gene.groups)+"'."
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is in multiple annotations groups: '"+"', '".join(e.gene.groups)+"'."
 
         if e.code == GeneError.GROUP_MULTIPLE_SAME:
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has been added to the same annotation group '"+e.error_desc['group']+"' multiple times."
@@ -88,6 +88,24 @@ class TextReport(Report):
         if e.code == GeneError.NEEDS_REVIEW:
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is not yet Approved. Change its status once you have finished working on it."
 
+        if e.code == GeneError.INVALID_MRNA_NAME:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has invalid name for its isoforms. Each isoform should be named '<name of the gene> X', where X is a letter (from A to Z)  (e.g. : gluthatione s-transferase A)."
+
+        if e.code == GeneError.SIMILAR_TO:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" contains 'similar to' or '-like' in its name. Use 'putative' instead, and only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if e.code == GeneError.SYMBOL_NOT_ID:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has an invalid symbol: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if e.code == GeneError.NAME_NOT_ID:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has an invalid name: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if e.code == GeneError.SYMBOL_NOT_UNIQUE:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has a symbol which is not unique."
+
+        if e.code == GeneError.NAME_NOT_UNIQUE:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has a name which is not unique."
+
         return "Unexpected error %s" % e.code
 
 
@@ -112,7 +130,7 @@ class TextReport(Report):
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is missing a 'Name'."
 
         if w.code == GeneError.NAME_INVALID:
-            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" should have a human readable 'Name' instead of '"+e.error_desc['name']+"'."
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" should have a human readable 'Name' instead of '"+w.error_desc['name']+"'."
 
         if w.code == GeneError.DBXREF_UNKNOWN:
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has an unknown dbxref type: '"+w.error_desc['dbxref']+"'."
@@ -155,6 +173,24 @@ class TextReport(Report):
 
         if w.code == GeneError.NEEDS_REVIEW:
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is not yet Approved. Change its status once you have finished working on it."
+
+        if w.code == GeneError.PUTATIVE:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" contains 'putative' in its name. Use this only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if w.code == GeneError.SIMILAR_TO:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" contains 'similar to' or '-like' in its name. Use 'putative' instead, and only if you have real doubts on the naming of this gene. If you have sufficient supporting evidences, just write the gene name without 'putative'."
+
+        if w.code == GeneError.SYMBOL_NOT_ID:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has an invalid symbol: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if w.code == GeneError.NAME_NOT_ID:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has an invalid name: don't use OGS ids like DV0000123-RA, they will be generated on OGS release."
+
+        if w.code == GeneError.SYMBOL_NOT_UNIQUE:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has a symbol which is not unique."
+
+        if w.code == GeneError.NAME_NOT_UNIQUE:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has a name which is not unique."
 
         return "Unexpected warning %s" % w.code
 
