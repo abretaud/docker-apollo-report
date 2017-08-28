@@ -7,9 +7,32 @@ then
     echo "Local only mode, will generate report on /data/raw_apollo.gff"
     /opt/apollo_checker/report_local.sh "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
 else
+
     # Update the report if not existing yet
     if [ ! -f /data/report/full_report.json ]; then
-        /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
+        wa_url=${APOLLO_URL%/} # Url of the Apollo server (trim trailing slash)
+
+        # Check apollo is online
+        echo "Trying to connect to apollo server"
+        for ((i=0;i<40;i++))
+        do
+            APOLLO_ONLINE=$(curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" >/dev/null 2>&1; echo "$?")
+            if [[ $APOLLO_ONLINE -eq 0 ]]; then
+                break
+            fi
+            sleep 3
+        done
+
+        if ! [[ $APOLLO_ONLINE -eq 0 ]]; then
+            echo "Cannot connect to apollo server"
+            exit "${APOLLO_ONLINE}"
+        fi
+
+        # Generate report
+        ORGS=$(curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" 2> /dev/null | wc -c)
+        if ! [[ $ORGS -eq 0 ]]; then
+            /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
+        fi
     fi
 
     echo "@daily    (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genome.fa /data/report/ 2>> /var/log/apollo_report.log')" > cron
