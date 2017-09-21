@@ -5,9 +5,9 @@ from wacheck.report.TextReport import TextReport
 
 class AdminTextReport(TextReport):
 
-    def __init__(self, checker, ok, errors, warnings, genes_by_users):
+    def __init__(self, checker, ok, errors, warnings):
 
-        TextReport.__init__(self, checker, ok, errors, warnings, genes_by_users)
+        TextReport.__init__(self, checker, ok, errors, warnings)
 
         print self.render()
 

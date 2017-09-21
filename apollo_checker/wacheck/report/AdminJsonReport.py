@@ -9,9 +9,9 @@ from collections import OrderedDict
 
 class AdminJsonReport(HtmlReport):
 
-    def __init__(self, checker, ok, errors, warnings, genes_by_users):
+    def __init__(self, checker, ok, errors, warnings):
 
-        HtmlReport.__init__(self, checker, ok, errors, warnings, genes_by_users)
+        HtmlReport.__init__(self, checker, ok, errors, warnings)
 
     def save_to_file(self, path):
 
@@ -41,6 +41,34 @@ class AdminJsonReport(HtmlReport):
             if self.ok and u in self.ok and len(self.ok[u]) > 0:
                 for o in self.ok[u]:
                     res[u]['ok'].append(self.render_ok(o))
+
+        return res
+
+    def render_by_group(self):
+
+        res = OrderedDict()
+
+        for group_name, genes in self.genes_by_groups.items():
+
+            res[group_name] = {'errors': [], 'warnings' : [], 'ok': [], 'num_genes': len(genes)}
+
+            for gene in genes:
+
+                if gene.errors:
+                    for e in gene.errors:
+                        res[group_name]['errors'].append(self.render_error(e))
+
+                if gene.warnings:
+                    for w in gene.warnings:
+                        res[group_name]['warnings'].append(self.render_warning(w))
+
+                if not gene.errors and not gene.warnings:
+                    res[group_name]['ok'].append(self.render_ok(gene))
+
+        # Move unknowns at the end of the list
+        unknowns = res['Unknown']
+        del res['Unknown']
+        res['Unknown (no group defined)'] = unknowns
 
         return res
 
@@ -144,6 +172,7 @@ class AdminJsonReport(HtmlReport):
                 res['wa_errors'].append(self.render_wa_error(e))
 
         res['genes_by_users'] = self.render_by_user()
+        res['genes_by_groups'] = self.render_by_group()
         res['splitted'] =  self.render_splitted()
         res['parts'] = self.render_parts()
         res['duplicated'] = self.render_duplicated()

@@ -73,6 +73,7 @@ else {
 ?>
 
 
+<h2>Report by users</h2>
 <?php foreach ($users_to_show as $u => $data): ?>
     <h3><?php echo $u ?></h3>
 
@@ -101,6 +102,35 @@ else {
     <?php endif; ?>
 <?php endforeach; ?>
 
+
+<h2>Report by groups</h2>
+<?php foreach ($report['genes_by_groups'] as $group_name => $data): ?>
+    <h3><?php echo $group_name ?></h3>
+
+    <?php if (count($data['errors']) > 0): ?>
+        <p>The following <b><?php echo count($data['errors']) ?> errors</b> were found (blocking):</p><ul>
+        <?php foreach ($data['errors'] as $e): ?>
+            <li><?php echo $e ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
+    <?php if (count($data['warnings']) > 0): ?>
+        <p>The following <b><?php echo count($data['warnings']) ?> warnings</b> were found (non blocking, potential issues):</p><ul>
+        <?php foreach ($data['warnings'] as $w): ?>
+            <li><?php echo $w ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
+    <?php if (count($data['ok']) > 0): ?>
+        <p>The following <b><?php echo count($data['ok']) ?></b> genes are <b>valid</b>:</p><ul>
+        <?php foreach ($data['ok'] as $o): ?>
+            <li><?php echo $o ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+<?php endforeach; ?>
 
 <?php if ($is_admin && (getenv("DETAILED_REPORT") == "1")): ?>
     <h2>Splitted genes:</h2><ul>

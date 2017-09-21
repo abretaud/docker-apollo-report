@@ -7,9 +7,9 @@ from datetime import datetime
 
 class AdminHtmlReport(HtmlReport):
 
-    def __init__(self, checker, ok, errors, warnings, genes_by_users):
+    def __init__(self, checker, ok, errors, warnings):
 
-        HtmlReport.__init__(self, checker, ok, errors, warnings, genes_by_users)
+        HtmlReport.__init__(self, checker, ok, errors, warnings)
 
     def save_to_file(self, path):
 

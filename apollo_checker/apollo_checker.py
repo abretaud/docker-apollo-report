@@ -42,29 +42,28 @@ class WAChecker():
         errors = self.errors_by_users()
         warnings = self.warnings_by_users()
         oks = self.ok_by_users()
-        genes_by_users = self.genes_by_users()
 
-        self.names = sorted(genes_by_users.keys())
+        self.names = sorted(self.genes_by_users().keys())
 
         # Admin report in txt
-        admin_txt_report = AdminTextReport(self, oks, errors, warnings, genes_by_users)
+        admin_txt_report = AdminTextReport(self, oks, errors, warnings)
         admin_txt_report.render()
         if self.report_admin_txt:
             admin_txt_report.save_to_file(self.report_admin_txt)
 
         # Admin report in html
         if self.report_admin_html:
-            admin_html_report = AdminHtmlReport(self, oks, errors, warnings, genes_by_users)
+            admin_html_report = AdminHtmlReport(self, oks, errors, warnings)
             admin_html_report.save_to_file(self.report_admin_html)
 
         # Write user html reports if asked
         if self.report_dir:
-            user_html_report = UserHtmlReport(self, oks, errors, warnings, genes_by_users)
+            user_html_report = UserHtmlReport(self, oks, errors, warnings)
             user_html_report.save_to_dir(self.report_dir)
 
         # Admin report in json
         if self.report_admin_json:
-            admin_json_report = AdminJsonReport(self, oks, errors, warnings, genes_by_users)
+            admin_json_report = AdminJsonReport(self, oks, errors, warnings)
             admin_json_report.save_to_file(self.report_admin_json)
 
         if self.output_valid or self.output_invalid:
@@ -329,6 +328,19 @@ class WAChecker():
             genes[g.owner].append(g)
 
         return genes
+
+
+    def genes_by_groups(self):
+
+        groups = {}
+
+        for g in self.all_genes.values():
+            for o in g.groups:
+                if o not in groups:
+                    groups[o] = []
+                groups[o].append(g)
+
+        return groups
 
 
     def post_validation(self):

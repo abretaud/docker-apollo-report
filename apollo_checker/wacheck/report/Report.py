@@ -3,7 +3,7 @@ from wacheck.error.WAError import WAError
 
 class Report:
 
-    def __init__(self, checker, ok, errors, warnings, genes_by_users):
+    def __init__(self, checker, ok, errors, warnings):
 
         self.wa_url = checker.wa_url
         self.group_tags = checker.group_tags
@@ -21,7 +21,8 @@ class Report:
         self.ok = ok
         self.errors = errors
         self.warnings = warnings
-        self.genes_by_users = genes_by_users
+        self.genes_by_users = checker.genes_by_users()
+        self.genes_by_groups = checker.genes_by_groups()
 
         self.count_total_errors()
         self.count_total_warnings()
