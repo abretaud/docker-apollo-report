@@ -359,24 +359,26 @@ class WAChecker():
         seen_symbols = {}
         warned_symbols = []
         for g in self.all_genes.values():
-            if g.symbol not in seen_symbols:
-                seen_symbols[g.symbol] = g
-            else:
-                if g.symbol not in warned_symbols:
-                    seen_symbols[g.symbol].errors.append(GeneError(GeneError.SYMBOL_NOT_UNIQUE, seen_symbols[g.symbol]))
-                warned_symbols.append(g.symbol)
-                g.errors.append(GeneError(GeneError.SYMBOL_NOT_UNIQUE, g))
+            if not g.allele and not g.part:
+                if g.symbol not in seen_symbols:
+                    seen_symbols[g.symbol] = g
+                else:
+                    if g.symbol not in warned_symbols:
+                        seen_symbols[g.symbol].errors.append(GeneError(GeneError.SYMBOL_NOT_UNIQUE, seen_symbols[g.symbol]))
+                    warned_symbols.append(g.symbol)
+                    g.errors.append(GeneError(GeneError.SYMBOL_NOT_UNIQUE, g))
 
         seen_names = {}
         warned_names = []
         for g in self.all_genes.values():
-            if g.name not in seen_names:
-                seen_names[g.name] = g
-            else:
-                if g.name not in warned_names:
-                    seen_names[g.name].errors.append(GeneError(GeneError.NAME_NOT_UNIQUE, seen_names[g.name]))
-                warned_names.append(g.name)
-                g.errors.append(GeneError(GeneError.NAME_NOT_UNIQUE, g))
+            if not g.allele and not g.part:
+                if g.name not in seen_names:
+                    seen_names[g.name] = g
+                else:
+                    if g.name not in warned_names:
+                        seen_names[g.name].errors.append(GeneError(GeneError.NAME_NOT_UNIQUE, seen_names[g.name]))
+                    warned_names.append(g.name)
+                    g.errors.append(GeneError(GeneError.NAME_NOT_UNIQUE, g))
 
 
 if __name__ == '__main__':
