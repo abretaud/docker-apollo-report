@@ -106,6 +106,12 @@ class TextReport(Report):
         if e.code == GeneError.NAME_NOT_UNIQUE:
             return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" has a name which is not unique."
 
+        if e.code == GeneError.DELETED_MISSING_NAME:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is marked as deleted but doesn't have a gene name."
+
+        if e.code == GeneError.DELETED_WRONG_NAME:
+            return "Gene "+e.display_id+" located at "+self.get_wa_url(e.scaffold, e.start, e.end)+" is marked as deleted but has a wrong gene name '"+e.error_desc['name']+"'."
+
         return "Unexpected error %s" % e.code
 
 
@@ -192,9 +198,20 @@ class TextReport(Report):
         if w.code == GeneError.NAME_NOT_UNIQUE:
             return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" has a name which is not unique."
 
+        if w.code == GeneError.DELETED_MISSING_NAME:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is marked as deleted but doesn't have a gene name."
+
+        if w.code == GeneError.DELETED_WRONG_NAME:
+            return "Gene "+w.display_id+" located at "+self.get_wa_url(w.scaffold, w.start, w.end)+" is marked as deleted but has a wrong gene name '"+e.error_desc['name']+"'."
+
         return "Unexpected warning %s" % w.code
 
 
     def render_ok(self, g):
 
         return "Gene "+g.display_id+" located at "+self.get_wa_url(g.scaffold, g.f.location.start, g.f.location.end)+" is ok (in group '"+'\', \''.join(g.groups)+"')"
+
+
+    def render_deleted(self, g):
+
+        return "Gene "+g.name+" located at "+self.get_wa_url(g.scaffold, g.f.location.start, g.f.location.end)+" will be deleted"

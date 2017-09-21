@@ -34,26 +34,55 @@ else {
 }
 ?>
 
+
+<?php if ($is_admin): ?>
+    <h2 id="stats">General statistics</h2>
+
+    <p></p>
+    <p>Found <b><?php echo $report['global_stats']['total_genes']; ?> genes</b> (<b><?php echo $report['global_stats']['genes_ok']; ?></b> valid genes, <b><?php echo $report['global_stats']['total_genes'] - $report['global_stats']['genes_ok']; ?></b> invalid genes, <b><?php echo $report['global_stats']['total_warnings']; ?></b> warnings, <b><?php echo $report['global_stats']['total_errors']; ?></b> issues)</p><ul>
+          <li><b><?php echo $report['global_stats']['genes_seen_once']; ?></b> genes with only 1 allele and 1 part</li>
+          <li><b><?php echo count($report['duplicated']); ?></b> genes (or parts of genes) with multiple alleles</li>
+          <li><b><?php echo count($report['splitted']); ?></b> genes (or alleles) with multiple parts</li>
+          <li><b><?php echo count($report['global_stats']['total_deleted']); ?></b> deleted genes</li>
+          <li><b><?php echo $report['global_stats']['goid']; ?></b> genes have at least one goid</li>
+    </ul>
+<?php endif; ?>
+
+
 <ul>
 <?php if ($is_admin): ?>
-    <li><a href="#stats">General statistics</a></li>
-    <li><a href="#group_rep">Group repartition</a></li>
-    <li><a href="#user_rep">User repartition</a></li>
-    <li><a href="#by_user">Report by users</a></li>
+    <li><a href="#by_user">Report by users:</a></li>
     <ul>
         <?php foreach ($users_to_show as $u => $data): ?>
-            <li><a href="#user-<?php echo $u ?>"><?php echo $u ?></a></li>
+            <li><a href="#user-<?php echo $u ?>"><?php echo $u ?></a>:
+                <b><?php echo $data['num_genes'] ?></b> genes
+               (<b><?php echo count($data['ok']) ?></b> valid genes,
+                <b><?php echo $data['num_genes'] - count($data['ok']) ?></b> invalid genes,
+                <b><?php echo count($data['warnings']) ?></b> warnings,
+                <b><?php echo count($data['errors']) ?></b> issues,
+                <b><?php echo count($data['deleted']) ?></b> deleted genes
+                )</li>
         <?php endforeach; ?>
     </ul>
 <?php else: ?>
-    <li><a href="#by_user">Your genes</a></li>
+    <li><a href="#by_user">Your genes:</a></li>
 <?php endif; ?>
-    <li><a href="#by_group">Report by groups</a></li>
+<?php if (getenv("ANNOTATION_GROUPS") == "1"): ?>
+    <li><a href="#by_group">Report by groups:</a></li>
     <ul>
         <?php foreach ($report['genes_by_groups'] as $group_name => $data): ?>
-            <li><a href="#group-<?php echo strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $group_name))) ?>"><?php echo $group_name ?></a></li>
+            <li><a href="#group-<?php echo strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $group_name))) ?>"><?php echo $group_name ?></a>:
+                <b><?php echo $data['num_genes'] ?></b> genes
+                (<b><?php echo count($data['ok']) ?></b> valid genes,
+                 <b><?php echo $data['num_genes'] - count($data['ok']) ?></b> invalid genes,
+                 <b><?php echo count($data['warnings']) ?></b> warnings,
+                 <b><?php echo count($data['errors']) ?></b> issues,
+                 <b><?php echo count($data['deleted']) ?></b> deleted genes
+                 )
+            </li>
         <?php endforeach; ?>
     </ul>
+<?php endif; ?>
 <?php if ($is_admin && (getenv("DETAILED_REPORT") == "1")): ?>
     <li><a href="#splitted">Splitted genes</a></li>
     <li><a href="#parts">Parts repartition</a></li>
@@ -64,44 +93,6 @@ else {
     <li><a href="#unexpected">Unexpected errors</a></li>
 <?php endif; ?>
 </ul>
-
-
-<?php if ($is_admin): ?>
-    <h2 id="stats">General statistics</h2>
-
-    <p></p>
-    <p>Found <b><?php echo $report['global_stats']['total_genes']; ?> genes</b> (<b><?php echo $report['global_stats']['genes_ok']; ?></b> valid genes, <b><?php echo $report['global_stats']['total_genes'] - $report['global_stats']['genes_ok']; ?></b> invalid genes, <b><?php echo $report['global_stats']['total_warnings']; ?></b> warnings, <b><?php echo $report['global_stats']['total_errors']; ?></b> issues)</p><ul>
-          <li><b><?php echo $report['global_stats']['genes_seen_once']; ?></b> genes with only 1 allele and 1 part</li>
-          <li><b><?php echo count($report['duplicated']); ?></b> genes (or parts of genes) with multiple alleles</li>
-          <li><b><?php echo count($report['splitted']); ?></b> genes (or alleles) with multiple parts</li>
-    </ul>
-    <p><?php echo $report['global_stats']['goid']; ?> genes have at least one goid</p>
-
-    <?php if (getenv("ANNOTATION_GROUPS") == "1"): ?>
-        <h2 id="group_rep">Group repartition:</h2><ul>
-        <?php foreach ($report['groups'] as $g_name => $g_num): ?>
-            <li><?php echo $g_name ?>: <b><?php echo $g_num ?></b> genes</li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-
-
-    <h2 id="user_rep">User repartition:</h2><ul>
-    <?php foreach ($report['genes_by_users'] as $u => $data): ?>
-        <li><?php echo $u ?>:
-            <b><?php echo $data['num_genes'] ?></b> annotated genes
-            (
-            <b><?php echo count($data['ok']) ?></b> valid genes,
-            <b><?php echo $data['num_genes'] - count($data['ok']) ?></b> invalid genes,
-            <b><?php echo count($data['warnings']) ?></b> warnings,
-            <b><?php echo count($data['errors']) ?></b> issues
-            )
-        </li>
-    <?php endforeach; ?>
-    </ul>
-
-<?php endif; ?>
-
 
 <?php if ($is_admin): ?>
     <h2 id="by_user">Report by users</h2>
@@ -134,37 +125,47 @@ else {
         <?php endforeach; ?>
         </ul>
     <?php endif; ?>
-<?php endforeach; ?>
 
-
-<h2 id="by_group">Report by groups</h2>
-<?php foreach ($report['genes_by_groups'] as $group_name => $data): ?>
-    <h3 id="group-<?php echo strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $group_name))) ?>"><?php echo $group_name ?></h3>
-
-    <?php if (count($data['errors']) > 0): ?>
-        <p>The following <b><?php echo count($data['errors']) ?> errors</b> were found (blocking):</p><ul>
-        <?php foreach ($data['errors'] as $e): ?>
-            <li><?php echo $e ?></li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-
-    <?php if (count($data['warnings']) > 0): ?>
-        <p>The following <b><?php echo count($data['warnings']) ?> warnings</b> were found (non blocking, potential issues):</p><ul>
-        <?php foreach ($data['warnings'] as $w): ?>
-            <li><?php echo $w ?></li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-
-    <?php if (count($data['ok']) > 0): ?>
-        <p>The following <b><?php echo count($data['ok']) ?></b> genes are <b>valid</b>:</p><ul>
-        <?php foreach ($data['ok'] as $o): ?>
+    <?php if (count($data['deleted']) > 0): ?>
+        <p>The following <b><?php echo count($data['deleted']) ?></b> genes will be <b>deleted</b>:</p><ul>
+        <?php foreach ($data['deleted'] as $o): ?>
             <li><?php echo $o ?></li>
         <?php endforeach; ?>
         </ul>
     <?php endif; ?>
 <?php endforeach; ?>
+
+
+<?php if (getenv("ANNOTATION_GROUPS") == "1"): ?>
+    <h2 id="by_group">Report by groups</h2>
+    <?php foreach ($report['genes_by_groups'] as $group_name => $data): ?>
+        <h3 id="group-<?php echo strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $group_name))) ?>"><?php echo $group_name ?></h3>
+
+        <?php if (count($data['errors']) > 0): ?>
+            <p>The following <b><?php echo count($data['errors']) ?> errors</b> were found (blocking):</p><ul>
+            <?php foreach ($data['errors'] as $e): ?>
+                <li><?php echo $e ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (count($data['warnings']) > 0): ?>
+            <p>The following <b><?php echo count($data['warnings']) ?> warnings</b> were found (non blocking, potential issues):</p><ul>
+            <?php foreach ($data['warnings'] as $w): ?>
+                <li><?php echo $w ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+
+        <?php if (count($data['ok']) > 0): ?>
+            <p>The following <b><?php echo count($data['ok']) ?></b> genes are <b>valid</b>:</p><ul>
+            <?php foreach ($data['ok'] as $o): ?>
+                <li><?php echo $o ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
 
 <?php if ($is_admin && (getenv("DETAILED_REPORT") == "1")): ?>
     <h2 id="splitted">Splitted genes:</h2><ul>

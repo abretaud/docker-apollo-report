@@ -27,6 +27,7 @@ class Report:
         self.count_total_errors()
         self.count_total_warnings()
         self.count_total_ok()
+        self.count_total_deleted()
         self.count_total_genes()
 
 
@@ -59,6 +60,14 @@ class Report:
 
         for ou in self.ok.values():
             self.total_ok += len(ou)
+
+
+    def count_total_deleted(self):
+
+        self.total_deleted = 0
+
+        for ou in self.ok.values():
+            self.total_deleted += len([ g for g in ou if g.is_deleted])
 
 
     def count_total_genes(self):

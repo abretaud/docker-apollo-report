@@ -28,6 +28,8 @@ class GeneError:
     NAME_NOT_ID = 26
     SYMBOL_NOT_UNIQUE = 27
     NAME_NOT_UNIQUE = 28
+    DELETED_MISSING_NAME = 29
+    DELETED_WRONG_NAME = 30
 
     def __init__(self, code, gene, error_desc = {}):
 

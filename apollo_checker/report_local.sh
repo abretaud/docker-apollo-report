@@ -32,6 +32,7 @@ python $SCRIPT_DIR/apollo_checker.py \
     -a "$wa_ext_url" \
     -o "$output_dir/valid.gff" \
     -i "$output_dir/invalid.gff" \
+    -d "$output_dir/deleted.tsv" \
     --report_admin_json "$output_dir/full_report.json" \
     $OPTS \
     "$raw_apollo_gff" \

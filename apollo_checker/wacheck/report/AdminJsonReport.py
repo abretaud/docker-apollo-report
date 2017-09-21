@@ -28,7 +28,7 @@ class AdminJsonReport(HtmlReport):
         res = OrderedDict()
         for u in self.user_names:
 
-            res[u] = {'errors': [], 'warnings' : [], 'ok': [], 'num_genes': len(self.genes_by_users[u])}
+            res[u] = {'errors': [], 'warnings' : [], 'ok': [], 'deleted': [], 'num_genes': len(self.genes_by_users[u])}
 
             if self.errors and u in self.errors and len(self.errors[u]) > 0:
                 for e in self.errors[u]:
@@ -40,7 +40,10 @@ class AdminJsonReport(HtmlReport):
 
             if self.ok and u in self.ok and len(self.ok[u]) > 0:
                 for o in self.ok[u]:
-                    res[u]['ok'].append(self.render_ok(o))
+                    if o.is_deleted:
+                        res[u]['deleted'].append(self.render_deleted(o))
+                    else:
+                        res[u]['ok'].append(self.render_ok(o))
 
         return res
 
@@ -63,7 +66,9 @@ class AdminJsonReport(HtmlReport):
                         res[group_name]['warnings'].append(self.render_warning(w))
 
                 if not gene.errors and not gene.warnings:
-                    res[group_name]['ok'].append(self.render_ok(gene))
+                    if not gene.is_deleted:
+                        res[group_name]['ok'].append(self.render_ok(gene))
+                    # Deleted genes are not in any group...
 
         # Move unknowns at the end of the list
         unknowns = res['Unknown']
@@ -156,6 +161,7 @@ class AdminJsonReport(HtmlReport):
         res['genes_invalid'] = self.total_genes-self.total_ok
         res['total_warnings'] = self.total_warnings
         res['total_errors'] = self.total_errors
+        res['total_deleted'] = self.total_deleted
         res['genes_seen_once'] = self.genes_seen_once
 
         return res

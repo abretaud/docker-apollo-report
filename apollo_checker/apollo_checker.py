@@ -69,6 +69,9 @@ class WAChecker():
         if self.output_valid or self.output_invalid:
             self.write_gff(oks)
 
+        if self.output_deleted:
+            self.write_deleted(oks)
+
 
     def parse_groups(self):
         self.allowed_groups = {}
@@ -89,8 +92,10 @@ class WAChecker():
         # Write output GFF
         if self.output_valid or self.output_invalid:
             all_ok = []
+            deleted = []
             for o in oks:
-                all_ok += [ x.wa_id for x in oks[o] ]
+                all_ok += [ x.wa_id for x in oks[o] if not x.is_deleted ]
+                deleted += [ x.wa_id for x in oks[o] if x.is_deleted ]
 
         output_source = ["apollo"]
 
@@ -155,6 +160,19 @@ class WAChecker():
             in_handle.close()
             out_inv_handle.close()
 
+    def write_deleted(self, oks):
+        # Write output tsv
+        deleted = []
+        for o in oks:
+            deleted += [ x.name for x in oks[o] if x.is_deleted ]
+
+        out_handle = open(self.output_deleted, "w")
+
+        for d in deleted:
+            out_handle.write(d + '\n')
+
+        out_handle.close()
+
 
     def parse_args(self):
 
@@ -165,6 +183,7 @@ class WAChecker():
         parser.add_argument("-a", "--apollo", help="Apollo server url", required=True)
         parser.add_argument("-o", "--out_gff", help="Output gff file where valid genes will be written")
         parser.add_argument("-i", "--out_inv_gff", help="Output gff file where invalid genes will be written")
+        parser.add_argument("-d", "--out_deleted", help="Output the list of deleted genes in given file")
         parser.add_argument("--report_dir", help="Output directory where report files will be created (one file by user)")
         parser.add_argument("--report_admin_txt", help="Output an admin report in TXT format to given path")
         parser.add_argument("--report_admin_json", help="Output an admin report in JSON format to given path")
@@ -187,6 +206,7 @@ class WAChecker():
         self.in_file = os.path.abspath(args.in_gff)
         self.output_valid = os.path.abspath(args.out_gff)
         self.output_invalid = os.path.abspath(args.out_inv_gff)
+        self.output_deleted = os.path.abspath(args.out_deleted)
         self.report_dir = None
         if args.report_dir:
             self.report_dir = os.path.abspath(args.report_dir)
@@ -221,7 +241,7 @@ class WAChecker():
         in_handle = open(self.in_file)
         for rec in GFF.parse(in_handle):
             for f in rec.features:
-                if (f.type == "gene"):
+                if (f.type == "gene") and ('status' not in f.qualifiers or not f.qualifiers['status'] or f.qualifiers['status'][0].lower() != "deleted"):
 
                     gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x, self.no_group, self.split_users)
 
@@ -274,6 +294,10 @@ class WAChecker():
                                 gene.errors.append(GeneError(GeneError.ALLELE_SAME, gene, {'other_name': identical.display_id, 'other_scaff': identical.scaffold, 'other_start': identical.f.location.start, 'other_end': identical.f.location.end}))
 
                         self.duplicated_genes[allele_gene_key][new_allele] = gene
+                elif 'status' in f.qualifiers and f.qualifiers['status'] and f.qualifiers['status'][0].lower() == "deleted":
+                    gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x, self.no_group, self.split_users)
+
+                    self.all_genes[gene.wa_id] = gene
                 else:
                     fake_gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x)
                     self.wa_errors.append(WAError(WAError.UNEXPECTED_FEATURE, fake_gene))
@@ -371,7 +395,7 @@ class WAChecker():
         seen_symbols = {}
         warned_symbols = []
         for g in self.all_genes.values():
-            if not g.allele and not g.part:
+            if not g.allele and not g.part and not g.is_deleted:
                 if g.symbol not in seen_symbols:
                     seen_symbols[g.symbol] = g
                 else:
@@ -383,7 +407,7 @@ class WAChecker():
         seen_names = {}
         warned_names = []
         for g in self.all_genes.values():
-            if not g.allele and not g.part:
+            if not g.allele and not g.part and not g.is_deleted:
                 if g.name not in seen_names:
                     seen_names[g.name] = g
                 else:

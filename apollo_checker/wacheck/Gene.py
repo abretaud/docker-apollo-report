@@ -35,18 +35,25 @@ class Gene:
         self.warnings = []
         self.wa_errors = []
 
-        self.check_feature_limits()
-        self.check_sub_features_mrna()
+        self.is_deleted = False
+        if (not self.apollo_1x) and 'status' in self.f.qualifiers and self.f.qualifiers['status'] and self.f.qualifiers['status'][0].lower() == "deleted":
+            self.is_deleted = True
 
-        self.check_symbol()
-        self.check_sub_features()
-        self.check_cds()
-        self.check_intron()
-        self.check_name()
-        self.check_groups()
-        self.check_dbxref()
+        if not self.is_deleted:
+            self.check_feature_limits()
+            self.check_sub_features_mrna()
 
-        self.check_status()
+            self.check_symbol()
+            self.check_sub_features()
+            self.check_cds()
+            self.check_intron()
+            self.check_name()
+            self.check_groups()
+            self.check_dbxref()
+
+            self.check_status()
+        else:
+            self.check_deleted_name()
 
         allowed_parts = [str(x) for x in range(1,30)]
         self.part = self.get_tag_value('Part', allowed_parts) # Must be an integer
@@ -185,11 +192,20 @@ class Gene:
                 self.warnings.append(GeneError(GeneError.SIMILAR_TO, self, {'name': name}))
 
             elif re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", name):
-                if (not self.apollo_1x) and ('status' not in self.f.qualifiers or (self.f.qualifiers['status'][0].lower() != "deleted")):
-                    self.errors.append(GeneError(GeneError.NAME_NOT_ID, self, {'name': name}))
+                self.errors.append(GeneError(GeneError.NAME_NOT_ID, self, {'name': name}))
 
             else:
                 self.name = self.f.qualifiers['Name'][0].strip()
+
+
+    def check_deleted_name(self):
+
+        if 'Name' not in self.f.qualifiers or self.f.qualifiers['Name'][0] == "" or self.f.qualifiers['Name'][0] == "true":
+            self.errors.append(GeneError(GeneError.DELETED_MISSING_NAME, self))
+        else:
+            self.name = self.f.qualifiers['Name'][0].strip()
+            if not re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", self.name):
+                self.errors.append(GeneError(GeneError.DELETED_WRONG_NAME, self, {'name': self.name}))
 
 
     def check_group(self, group):
