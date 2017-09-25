@@ -126,10 +126,10 @@ class Gene:
     def check_multiple_mrnas(self):
 
         if len(self.f.sub_features) > 1:
-            gene_name = self.f.qualifiers['ID'][0]
+            gene_name = self.f.qualifiers['Name'][0]
             for child in self.f.sub_features:
                 if child.type == "mRNA":
-                    if len(child.qualifiers['ID'][0]) < len(gene_name) or not child.qualifiers['ID'][0].startswith(gene_name) or re.match("^ [A-F]{1,2}$", child.qualifiers['ID'][0][len(gene_name):]):
+                    if len(child.qualifiers['Name'][0]) < len(gene_name) or not child.qualifiers['Name'][0].startswith(gene_name) or not re.match("^ [A-F]{1,2}$", child.qualifiers['Name'][0][len(gene_name):]):
                         self.errors.append(GeneError(GeneError.INVALID_MRNA_NAME, self, {'gene_name': gene_name}))
 
 
