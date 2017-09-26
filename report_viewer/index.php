@@ -77,7 +77,6 @@ else {
                  <b><?php echo $data['num_genes'] - count($data['ok']) ?></b> invalid genes,
                  <b><?php echo count($data['warnings']) ?></b> warnings,
                  <b><?php echo count($data['errors']) ?></b> issues,
-                 <b><?php echo count($data['deleted']) ?></b> deleted genes
                  )
             </li>
         <?php endforeach; ?>
