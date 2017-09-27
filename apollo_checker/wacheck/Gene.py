@@ -79,6 +79,22 @@ class Gene:
         if self.f.location.end > self.scaffold_size:
             self.wa_errors.append(WAError(WAError.OUTSIDE_SCAFFOLD_END, self))
 
+        fmax = None
+        fmin = None
+        for child in self.f.sub_features:
+            if child.type == "mRNA":
+                if child.location.start > fmin:
+                    fmin = child.location.start
+                if child.location.end > fmax:
+                    fmax = child.location.end
+                if child.location.strand != self.f.location.strand:
+                    self.wa_errors.append(WAError(WAError.WRONG_GENE_STRAND, self, {'expected': child.location.strand}))
+
+        if fmin and fmin > self.f.location.start:
+            self.wa_errors.append(WAError(WAError.WRONG_GENE_START, self, {'expected': fmin}))
+        if fmax and fmax < self.f.location.end:
+            self.wa_errors.append(WAError(WAError.WRONG_GENE_END, self, {'expected': fmax}))
+
 
     def check_sub_features_mrna(self):
 

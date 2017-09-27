@@ -6,6 +6,9 @@ class WAError:
     OUTSIDE_SCAFFOLD_END = 3
     UNEXPECTED_SUB_FEATURE = 4
     MULTIPLE_SUB_FEATURE = 5
+    WRONG_GENE_START = 6
+    WRONG_GENE_END = 7
+    WRONG_GENE_STRAND = 8
 
     def __init__(self, code, gene, error_desc = {}):
 
@@ -16,4 +19,5 @@ class WAError:
         self.scaffold = gene.scaffold
         self.start = gene.f.location.start
         self.end = gene.f.location.end
+        self.strand = gene.f.location.strand
         self.error_desc = error_desc

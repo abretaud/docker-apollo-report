@@ -22,6 +22,15 @@ class HtmlReport(Report):
         if e.code == WAError.MULTIPLE_SUB_FEATURE:
             return "ERROR: multiple child element ("+str(e.error_desc['num_children'])+") for gene <a href=\""+self.get_wa_url(e.scaffold, e.start, e.end)+"\">"+e.gene.wa_id+"</a>"
 
+        if e.code == WAError.WRONG_GENE_START:
+            return "ERROR: "+e.gene.wa_id+" start position "+str(e.start)+" is not coherent with its children (expected "+str(e.error_desc['expected'])+")"
+
+        if e.code == WAError.WRONG_GENE_END:
+            return "ERROR: "+e.gene.wa_id+" end position "+str(e.end)+" is not coherent with its children (expected "+str(e.error_desc['expected'])+")"
+
+        if e.code == WAError.WRONG_GENE_STRAND:
+            return "ERROR: "+e.gene.wa_id+" strand "+str(e.strand)+" is not coherent with its children (expected "+str(e.error_desc['expected'])+")"
+
 
     def render_error(self, e):
 
