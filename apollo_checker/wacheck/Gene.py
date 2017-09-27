@@ -81,14 +81,16 @@ class Gene:
 
         fmax = None
         fmin = None
+        buggy_strand = False
         for child in self.f.sub_features:
             if child.type == "mRNA":
-                if child.location.start > fmin:
+                if not fmin or child.location.start < fmin:
                     fmin = child.location.start
-                if child.location.end > fmax:
+                if not fmax or child.location.end > fmax:
                     fmax = child.location.end
-                if child.location.strand != self.f.location.strand:
+                if not buggy_strand and child.location.strand != self.f.location.strand:
                     self.wa_errors.append(WAError(WAError.WRONG_GENE_STRAND, self, {'expected': child.location.strand}))
+                    buggy_strand = True  # Don't report for each mrna
 
         if fmin and fmin > self.f.location.start:
             self.wa_errors.append(WAError(WAError.WRONG_GENE_START, self, {'expected': fmin}))
