@@ -43,7 +43,7 @@ else {
           <li><b><?php echo $report['global_stats']['genes_seen_once']; ?></b> genes with only 1 allele and 1 part</li>
           <li><b><?php echo count($report['duplicated']); ?></b> genes (or parts of genes) with multiple alleles</li>
           <li><b><?php echo count($report['splitted']); ?></b> genes (or alleles) with multiple parts</li>
-          <li><b><?php echo count($report['global_stats']['total_deleted']); ?></b> deleted genes</li>
+          <li><b><?php echo $report['global_stats']['total_deleted']; ?></b> deleted genes</li>
           <li><b><?php echo $report['global_stats']['goid']; ?></b> genes have at least one goid</li>
     </ul>
 <?php endif; ?>
