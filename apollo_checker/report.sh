@@ -3,15 +3,13 @@
 set -u # stop if a variable is not initialized
 set -e # stop in case of error
 
-wa_url="0.0.0.0:8080" # Url of the Apollo server (trim trailing slash)
-wa_ext_url="0.0.0.0:8080" # Url of the Apollo server (trim trailing slash)
-genome="/root/script_python/Citrus_sinensis-scaffold00001.fasta" # Path to the genome fasta file
-output_dir="/root/script_python/tmp" # Directory where generated fils should be placed
-ANNOTATION_GROUPS="1"
-SPLIT_USERS="1"
+
+wa_url=${1%/} # Url of the Apollo server (trim trailing slash)
+wa_ext_url=${2%/} # Url of the Apollo server (trim trailing slash)
+genome=$3 # Path to the genome fasta file
+output_dir=$4 # Directory where generated fils should be placed
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-APOLLO_USER="admin_temp@bipaa"
-APOLLO_PASS="admin"
 
 # Automatic config
 tmp_dir=`mktemp -d`
@@ -20,7 +18,7 @@ raw_apollo_gff_gz="$raw_apollo_gff.gz"
 cur_date=`date +%F_%X`
 
 OPTS=""
-if [[ $ANNOTATION_GROUPS == "0" ]]
+if [[ $ANNOTATION_GROUPS == "1" ]]
 then
     OPTS="-g /data/annotation_groups.tsv"
 fi
