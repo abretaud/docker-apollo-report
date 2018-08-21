@@ -27,9 +27,7 @@
 
 <p>This is an automatic report concerning the genes that were manually annotated.</p>
 
-<p>This report is updated every night, and the present report have been generated on:  (Paris, France time).</p>
-
-//TODO : Extract time
+<p>This report is updated every night, and the present report have been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?> (Paris, France time).</p>
 
 <div class="tab">
     <?php foreach($report_dict as $organism=>$report) {?>
