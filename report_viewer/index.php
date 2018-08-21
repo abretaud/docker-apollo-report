@@ -1,6 +1,5 @@
 <?php
-//    $report_content = file_get_contents(getenv('REPORT_JSON_PATH'));
-    $report_content = file_get_contents("/root/script_python/tmp/report.json");
+    $report_content = file_get_contents(getenv('REPORT_JSON_PATH'));
     $report_dict = json_decode($report_content, true);
 
     $user = $_SERVER['PHP_AUTH_USER'];
@@ -11,7 +10,6 @@
         $admins = explode(',', getenv('ADMIN_USERS'));
         $is_admin = in_array($user, $admins);
     }
-    $is_admin = true;
 ?>
 
 
