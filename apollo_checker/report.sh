@@ -31,7 +31,7 @@ fi
 # Get organisms
 
 res=`curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms"`
-echo "" > "$output_dir/report.json"
+echo -n "" > "$output_dir/full_report.json"
 
 echo "$res" | jq -c '.[]' | while read i; do
     tmp_dir=`mktemp -d`
@@ -66,13 +66,13 @@ echo "$res" | jq -c '.[]' | while read i; do
         -x "$orga_output_dir/valid_cds.fa" \
         -y "$orga_output_dir/valid_proteins.fa"
 
-    echo -n "\"$orga\""":" >> "$output_dir/report.json"
-    cat "$orga_output_dir/report.json" >> "$output_dir/report.json"
-    echo "" >> "$output_dir/report.json"
+    echo -n "\"$orga\""":" >> "$output_dir/full_report.json"
+    cat "$orga_output_dir/report.json" >> "$output_dir/full_report.json"
+    echo "" >> "$output_dir/full_report.json"
     cp "$raw_apollo_gff" "$orga_output_dir/$raw_apollo_gff"
 
     # Remove temp files
     rm -rf $tmp_dir
 done
 
-sed -i '1s/^/{/;$!s/$/,/;$s/$/}/' "$output_dir/report.json"
+sed -i '1s/^/{/;$!s/$/,/;$s/$/}/' "$output_dir/full_report.json"
