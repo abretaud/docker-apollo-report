@@ -1,6 +1,7 @@
 <?php
-    $report_content = file_get_contents(getenv('REPORT_JSON_PATH'));
-    $report = json_decode($report_content, true);
+//    $report_content = file_get_contents(getenv('REPORT_JSON_PATH'));
+    $report_content = file_get_contents("/root/script_python/tmp/report.json");
+    $report_dict = json_decode($report_content, true);
 
     $user = $_SERVER['PHP_AUTH_USER'];
     if (empty($user) || getenv("ALL_ADMINS") == "1") {
@@ -10,11 +11,16 @@
         $admins = explode(',', getenv('ADMIN_USERS'));
         $is_admin = in_array($user, $admins);
     }
+    $is_admin = true;
 ?>
+
+
 
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="script.js"></script> 
 <title>Manual annotation report</title>
 </head>
 <body>
@@ -23,7 +29,17 @@
 
 <p>This is an automatic report concerning the genes that were manually annotated.</p>
 
-<p>This report is updated every night, and the present report have been generated on: <b><?php echo $report['time'] ?></b> (Paris, France time).</p>
+<p>This report is updated every night, and the present report have been generated on:  (Paris, France time).</p>
+
+//TODO : Extract time
+
+<div class="tab">
+    <?php foreach($report_dict as $organism=>$report) {?>
+        <button class="tablinks" onclick="openOrga(event, '<?php echo $organism ?>')"><?php echo $organism ?></button>
+    <?php } ?>
+</div>
+
+<?php foreach($report_dict as $organism=>$report) {?>
 
 <?php
 if ($is_admin) {
@@ -34,9 +50,9 @@ else {
 }
 ?>
 
-
+<div id="<?php echo $organism ?>" class="tabcontent" >
 <?php if ($is_admin): ?>
-    <h2 id="stats">General statistics</h2>
+    <h2> General statistics for <?php echo $organism ?></h2>
 
     <p></p>
     <p>Found <b><?php echo $report['global_stats']['total_genes']; ?> genes</b> (<b><?php echo $report['global_stats']['genes_ok']; ?></b> valid genes, <b><?php echo $report['global_stats']['total_genes'] - $report['global_stats']['genes_ok']; ?></b> invalid genes, <b><?php echo $report['global_stats']['total_warnings']; ?></b> warnings, <b><?php echo $report['global_stats']['total_errors']; ?></b> issues)</p><ul>
@@ -204,6 +220,8 @@ else {
     <?php endforeach; ?>
     </ul>
 <?php endif; ?>
+</div>
+<?php };?>
 
 </body>
 </html>
