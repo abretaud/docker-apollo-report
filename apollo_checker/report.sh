@@ -31,7 +31,7 @@ fi
 # Get organisms
 
 res=`curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "http://0.0.0.0:8080/organism/findAllOrganisms"`
-touch "$output_dir/report.json"
+echo "" > "$output_dir/report.json"
 
 echo "$res" | jq -c '.[]' | while read i; do
     tmp_dir=`mktemp -d`
