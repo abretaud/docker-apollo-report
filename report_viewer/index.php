@@ -18,17 +18,21 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="style.css">
-<script src="script.js"></script> 
+<script src="script.js"></script>
 <title>Manual annotation report</title>
 </head>
 <body>
+
+<button onclick="getToTop()" id="topButton">Top</button>
 
 <h1>Manual annotation report</h1>
 
 <p>This is an automatic report concerning the genes that were manually annotated.</p>
 
-<p>This report is updated every night, and the present report have been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?> (Paris, France time).</p>
+<p>This report is updated every night, and the present report have been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?>  (Paris, France time).</p>
 
+<p>The following organisms are available : </p>
+<br>
 <div class="tab">
     <?php foreach($report_dict as $organism=>$report) {?>
         <button class="tablinks" onclick="openOrga(event, '<?php echo $organism ?>')"><?php echo $organism ?></button>
@@ -68,10 +72,10 @@ else {
         <?php foreach ($users_to_show as $u => $data): ?>
             <li><a href="#user-<?php echo $u ?>"><?php echo $u ?></a>:
                 <b><?php echo $data['num_genes'] ?></b> genes
-               (<b><?php echo count($data['ok']) ?></b> valid genes,
-                <b><?php echo $data['num_genes'] - count($data['ok']) ?></b> invalid genes,
-                <b><?php echo count($data['warnings']) ?></b> warnings,
-                <b><?php echo count($data['errors']) ?></b> issues,
+               (<font color="green"><?php echo count($data['ok']) ?></font> valid genes,
+                <font color="red"><?php echo $data['num_genes'] - count($data['ok']) ?></font> invalid genes,
+                <font color="#cc7a00"><?php echo count($data['warnings']) ?></font> warnings,
+                <font color="red"><?php echo count($data['errors']) ?></font> issues,
                 <b><?php echo count($data['deleted']) ?></b> deleted genes
                 )</li>
         <?php endforeach; ?>
@@ -101,7 +105,7 @@ else {
     <li><a href="#alleles">Alleles repartition</a></li>
 <?php endif; ?>
 <?php if (count($report['wa_errors']) > 0 && $is_admin): ?>
-    <li><a href="#unexpected">Unexpected errors</a></li>
+    <li><a href="#unexpected">Unexpected errors </a> : <font color="red"> <?php echo count($report['wa_errors']) ?></font></li>
 <?php endif; ?>
 </ul>
 

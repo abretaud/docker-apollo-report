@@ -1,3 +1,5 @@
+window.onscroll = function() {scrollFunction()};
+
 function openOrga(evt, organism) {
     var tabcontent = document.getElementsByClassName("tabcontent");
     for (var i = 0; i < tabcontent.length; i++) {
@@ -11,4 +13,17 @@ function openOrga(evt, organism) {
 
     document.getElementById(organism).style.display = "block";
     evt.currentTarget.className += " active";
+}
+
+function scrollFunction() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        document.getElementById("topButton").style.display = "block";
+    } else {
+        document.getElementById("topButton").style.display = "none";
+    }
+}
+
+function getToTop() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
 }
