@@ -12,9 +12,12 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Automatic config
 tmp_dir=`mktemp -d`
 raw_apollo_gff="/data/raw_apollo.gff"
+organism_name="Unknown organism"
 cur_date=`date +%F_%X`
 
 cd "$tmp_dir"
+
+echo -n "" > "$output_dir/full_report.json"
 
 OPTS=""
 if [[ $ANNOTATION_GROUPS == "1" ]]
@@ -33,10 +36,15 @@ python $SCRIPT_DIR/apollo_checker.py \
     -o "$output_dir/valid.gff" \
     -i "$output_dir/invalid.gff" \
     -d "$output_dir/deleted.tsv" \
-    --report_admin_json "$output_dir/full_report.json" \
+    --report_admin_json "$tmp_dir/full_report.json" \
     $OPTS \
     "$raw_apollo_gff" \
     "$genome"
+
+echo -n "\"$organism_name\""":" >> "$output_dir/full_report.json"
+cat "$orga_output_dir/report.json" >> "$output_dir/full_report.json"
+echo "" >> "$output_dir/full_report.json"
+sed -i '1s/^/{/;$!s/$/,/;$s/$/}/' "$output_dir/full_report.json"
 
 gffread "$output_dir/valid.gff" -F -g "$genome" \
     -w "$output_dir/valid_transcripts.fa" \

@@ -21,7 +21,7 @@ VOLUME ["/data/report/"]
 # Install packages and PHP-extensions
 RUN apt-get -q update && \
     DEBIAN_FRONTEND=noninteractive apt-get -yq --no-install-recommends install \
-    wget git cron python-pip python-dev python-numpy \
+    wget git cron python-pip python-dev python-numpy jq \
  && rm -rf /var/lib/apt/lists/*
 
 # Install gffread
