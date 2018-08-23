@@ -41,16 +41,15 @@ echo "$res" | jq -c '.[]' | while read i; do
     orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"`
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
-    mkdir -p "$orga_output_dir"
 # Get genome file
-    genome_file=$(find . -iname "Genus_Species.fa" -o -iname "Genus_Species.fasta" -type f)
-    file_numbers=$(echo "$genome_file" | grep -c "^")
-    if [[ "$file_number" != "1" ]]; then
+    genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
+    file_numbers=`wc -l <<< "$genome_file"`
+    if [[ "$file_numbers" != "1" ]]; then
         echo "Could not find an unique genome file for organism $orga : $file_numbers appropriate files found"
         echo "$genome_file"
-        rm -rf $tmp_dir
         exit 1
     fi
+    mkdir -p "$orga_output_dir"
 
 # Download the gz file
     curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" -o "$raw_apollo_gff_gz" "$wa_url/IOService/download?uuid=$uuid&format=gzip&seqType=genomic&exportType=GFF3"
