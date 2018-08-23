@@ -6,7 +6,7 @@ set -e # stop in case of error
 
 wa_url=${1%/} # Url of the Apollo server (trim trailing slash)
 wa_ext_url=${2%/} # Url of the Apollo server (trim trailing slash)
-genome=$3 # Path to the genome fasta file
+genome_dir=$3 # Path to the directory containing genome fasta file(s). Files must be named "Common_Name.fa", with the apollo common name.
 output_dir=$4 # Directory where generated fils should be placed
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -42,6 +42,15 @@ echo "$res" | jq -c '.[]' | while read i; do
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
     mkdir -p "$orga_output_dir"
+# Get genome file
+    genome_file=$(find . -iname "Genus_Species.fa" -o -iname "Genus_Species.fasta" -type f)
+    file_numbers=$(echo "$genome_file" | grep -c "^")
+    if [[ "$file_number" != "1" ]]; then
+        echo "Could not find an unique genome file for organism $orga : $file_numbers appropriate files found"
+        echo "$genome_file"
+        rm -rf $tmp_dir
+        exit 1
+    fi
 
 # Download the gz file
     curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" -o "$raw_apollo_gff_gz" "$wa_url/IOService/download?uuid=$uuid&format=gzip&seqType=genomic&exportType=GFF3"
@@ -59,9 +68,9 @@ echo "$res" | jq -c '.[]' | while read i; do
         --report_admin_json "$orga_output_dir/report.json" \
         $OPTS \
         "$raw_apollo_gff" \
-        "$genome"
+        "$genome_file"
 
-    gffread "$orga_output_dir/valid.gff" -F -g "$genome" \
+    gffread "$orga_output_dir/valid.gff" -F -g "$genome_file" \
         -w "$orga_output_dir/valid_transcripts.fa" \
         -x "$orga_output_dir/valid_cds.fa" \
         -y "$orga_output_dir/valid_proteins.fa"
