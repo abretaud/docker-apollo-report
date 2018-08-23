@@ -32,6 +32,8 @@ else
         ORGS=$(curl --data-urlencode data="{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" 2> /dev/null | wc -c)
         if ! [[ $ORGS -eq 0 ]]; then
             /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genomes/ /data/report/
+        else
+            echo "No organism found on Apollo server, skipping report generation"
         fi
     fi
 
