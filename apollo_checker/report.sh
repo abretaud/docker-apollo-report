@@ -37,8 +37,8 @@ echo "$res" | jq -c '.[]' | while read i; do
     tmp_dir=`mktemp -d`
     cd "$tmp_dir"
     orga=`echo $i | jq ".commonName"`
-    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'sequences':[], organism:'$orga'}" "$wa_url/IOService/write"`
     orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"`
+    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', organism:'$orga', 'sequences':[]}" "$wa_url/IOService/write"`
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
 # Get genome file
