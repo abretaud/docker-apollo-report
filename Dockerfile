@@ -40,7 +40,7 @@ ENV APOLLO_URL="http://apollo:8080/" \
 
 ADD entrypoint.sh /
 ADD ./scripts/ /scripts/
-ADD ./report_viewer/index.php /var/www/html/index.php
+ADD ./report_viewer/* /var/www/html/
 ADD ./apollo_checker/ /opt/apollo_checker/
 
 CMD ["/entrypoint.sh"]
