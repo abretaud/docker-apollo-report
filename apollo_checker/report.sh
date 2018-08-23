@@ -49,6 +49,9 @@ echo "$res" | jq -c '.[]' | while read i; do
         echo "$genome_file"
         exit 1
     fi
+
+    echo "Generating report for $orga in $orga_output_dir using genome $genome_file"
+
     mkdir -p "$orga_output_dir"
 
 # Download the gz file
