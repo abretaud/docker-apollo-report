@@ -20,7 +20,8 @@ services:
         APOLLO_PASS: password # Password to connect to apollo
         ADMIN_USERS: userx@apollo,usery@apollo # Set this to a list of users who will have access to all the data from all users.
     volumes:
-        - ./my_genome.fa:/data/genome.fa:ro # Always mount the genome fasta file to this location
+        - ./my_genome.fa:/data/genomes/Genus_species.fa:ro # Always mount the genome fasta files to this location, named by organism common name
+        - ./my_other_genome.fa:/data/genomes/Genies_specus.fa:ro # Always mount the genome fasta files to this location, named by organism common name
         - ./my_annotation_groups.tsv:/data/annotation_groups.tsv:ro # If you have annotation groups, mount the list file on this location
     ports:
       - "3000:80"
@@ -43,5 +44,5 @@ DETAILED_REPORT: 0 # Set this to 1 if you want to display more detailed informat
 ANNOTATION_GROUPS: 1 # Set this to 0 if you don't want to validate AnnotGroup attribute
 SPLIT_USERS: 1 # Set this to 0 if you don't want to remove the @something suffix from apollo user names
 REPORT_JSON_PATH: /data/report/full_report.json # Location for a temp file, no need to change this in most cases
-LOCAL_ONLY: for testing purpose only, will not try to contact a remote apollo server, will expect a raw gff extract from apollo to be mounted on /data/raw_apollo.gff
+LOCAL_ONLY: for testing purpose only, will not try to contact a remote apollo server, will expect a raw gff extract from apollo to be mounted on /data/raw_apollo.gff, and a genome to be mounted on /data/genome.fa
 ```
