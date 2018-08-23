@@ -42,7 +42,7 @@ python $SCRIPT_DIR/apollo_checker.py \
     "$genome"
 
 echo -n "\"$organism_name\""":" >> "$output_dir/full_report.json"
-cat "$orga_output_dir/report.json" >> "$output_dir/full_report.json"
+cat "$tmp_dir/full_report.json" >> "$output_dir/full_report.json"
 echo "" >> "$output_dir/full_report.json"
 sed -i '1s/^/{/;$!s/$/,/;$s/$/}/' "$output_dir/full_report.json"
 
