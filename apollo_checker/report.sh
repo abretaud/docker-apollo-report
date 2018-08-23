@@ -37,7 +37,7 @@ echo "$res" | jq -c '.[]' | while read i; do
     tmp_dir=`mktemp -d`
     cd "$tmp_dir"
     orga=`echo $i | jq ".commonName"`
-    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'sequences':[]}" "$wa_url/IOService/write"`
+    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'sequences':[], organism:'$orga'}" "$wa_url/IOService/write"`
     orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"`
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
@@ -45,12 +45,12 @@ echo "$res" | jq -c '.[]' | while read i; do
     genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
     file_numbers=`wc -l <<< "$genome_file"`
     if [[ "$file_numbers" != "1" ]]; then
-        echo "Could not find an unique genome file for organism $orga: $file_numbers appropriate files found"
+        echo "Could not find an unique genome file for organism '$orga': $file_numbers appropriate files found"
         echo "$genome_file"
         exit 1
     fi
 
-    echo "Generating report for $orga in $orga_output_dir using genome $genome_file"
+    echo "Generating report for '$orga' in $orga_output_dir using genome $genome_file"
 
     mkdir -p "$orga_output_dir"
 
