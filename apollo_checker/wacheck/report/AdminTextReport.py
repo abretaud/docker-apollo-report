@@ -3,6 +3,7 @@ from wacheck.error.WAError import WAError
 
 from wacheck.report.TextReport import TextReport
 
+
 class AdminTextReport(TextReport):
 
     def __init__(self, checker, ok, errors, warnings):

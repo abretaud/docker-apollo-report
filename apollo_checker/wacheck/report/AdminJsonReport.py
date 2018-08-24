@@ -1,11 +1,9 @@
-from wacheck.error.GeneError import GeneError
-from wacheck.error.WAError import WAError
+import json
+from collections import OrderedDict
+from datetime import datetime
 
 from wacheck.report.HtmlReport import HtmlReport
 
-import json
-from datetime import datetime
-from collections import OrderedDict
 
 class AdminJsonReport(HtmlReport):
 
@@ -28,7 +26,7 @@ class AdminJsonReport(HtmlReport):
         res = OrderedDict()
         for u in self.user_names:
 
-            res[u] = {'errors': [], 'warnings' : [], 'ok': [], 'deleted': [], 'num_genes': len(self.genes_by_users[u])}
+            res[u] = {'errors': [], 'warnings': [], 'ok': [], 'deleted': [], 'num_genes': len(self.genes_by_users[u])}
 
             if self.errors and u in self.errors and len(self.errors[u]) > 0:
                 for e in self.errors[u]:
@@ -53,7 +51,7 @@ class AdminJsonReport(HtmlReport):
 
         for group_name, genes in self.genes_by_groups.items():
 
-            res[group_name] = {'errors': [], 'warnings' : [], 'ok': [], 'num_genes': len(genes)}
+            res[group_name] = {'errors': [], 'warnings': [], 'ok': [], 'num_genes': len(genes)}
 
             for gene in genes:
 
@@ -71,12 +69,12 @@ class AdminJsonReport(HtmlReport):
                     # Deleted genes are not in any group...
 
         # Move unknowns at the end of the list
-        unknowns = res['Unknown']
-        del res['Unknown']
-        res['Unknown (no group defined)'] = unknowns
+        if 'Unknown' in res:
+            unknowns = res['Unknown']
+            del res['Unknown']
+            res['Unknown (no group defined)'] = unknowns
 
         return res
-
 
     def render_splitted(self):
 
@@ -84,13 +82,11 @@ class AdminJsonReport(HtmlReport):
 
         for gene, parts in self.splitted_genes.items():
             pl = ()
-            locs = ()
             for p_id, part in parts.items():
-                pl += ("<a href=\""+self.get_wa_url(part.scaffold, part.f.location.start, part.f.location.end)+"\">"+p_id+"</a>",)
+                pl += ("<a href=\"" + self.get_wa_url(part.scaffold, part.f.location.start, part.f.location.end) + "\">" + p_id + "</a>",)
             res[gene] = sorted(pl)
 
         return res
-
 
     def render_parts(self):
 
@@ -108,20 +104,17 @@ class AdminJsonReport(HtmlReport):
 
         return res
 
-
     def render_duplicated(self):
 
         res = OrderedDict()
 
         for gene, copies in self.duplicated_genes.items():
             pl = ()
-            locs = ()
             for c_id, copy in copies.items():
-                pl += ("<a href=\""+self.get_wa_url(copy.scaffold, copy.f.location.start, copy.f.location.end)+"\">"+c_id+"</a> ("+("-" if str(copy.f.location.strand) == "-1" else "+")+")",)
+                pl += ("<a href=\"" + self.get_wa_url(copy.scaffold, copy.f.location.start, copy.f.location.end) + "\">" + c_id + "</a> (" + ("-" if str(copy.f.location.strand) == "-1" else "+") + ")",)
             res[gene] = pl
 
         return res
-
 
     def render_alleles(self):
 
@@ -139,7 +132,6 @@ class AdminJsonReport(HtmlReport):
 
         return res
 
-
     def render_groups(self):
 
         res = OrderedDict()
@@ -149,7 +141,6 @@ class AdminJsonReport(HtmlReport):
 
         return res
 
-
     def render_stats(self):
 
         res = OrderedDict()
@@ -158,14 +149,13 @@ class AdminJsonReport(HtmlReport):
 
         res['total_genes'] = self.total_genes
         res['genes_ok'] = self.total_ok
-        res['genes_invalid'] = self.total_genes-self.total_ok
+        res['genes_invalid'] = self.total_genes - self.total_ok
         res['total_warnings'] = self.total_warnings
         res['total_errors'] = self.total_errors
         res['total_deleted'] = self.total_deleted
         res['genes_seen_once'] = self.genes_seen_once
 
         return res
-
 
     def render(self):
 
@@ -179,7 +169,7 @@ class AdminJsonReport(HtmlReport):
 
         res['genes_by_users'] = self.render_by_user()
         res['genes_by_groups'] = self.render_by_group()
-        res['splitted'] =  self.render_splitted()
+        res['splitted'] = self.render_splitted()
         res['parts'] = self.render_parts()
         res['duplicated'] = self.render_duplicated()
         res['alleles'] = self.render_alleles()
