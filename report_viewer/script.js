@@ -1,6 +1,6 @@
 window.onscroll = function() {scrollFunction()};
 
-function openOrga(evt, organism) {
+function openOrga(organism) {
     var tabcontent = document.getElementsByClassName("tabcontent");
     for (var i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
@@ -12,7 +12,7 @@ function openOrga(evt, organism) {
     }
 
     document.getElementById(organism).style.display = "block";
-    evt.currentTarget.className += " active";
+    document.getElementById("button-"+organism).className += " active";
 }
 
 function scrollFunction() {

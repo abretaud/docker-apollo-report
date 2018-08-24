@@ -21,7 +21,8 @@
 <script src="script.js"></script>
 <title>Manual annotation report</title>
 </head>
-<body>
+
+<body onload="openOrga('<?php echo key($report_dict) ?>')">
 
 <button onclick="getToTop()" id="topButton">Top</button>
 
@@ -35,7 +36,7 @@
 <br>
 <div class="tab">
     <?php foreach($report_dict as $organism=>$report) {?>
-        <button class="tablinks" onclick="openOrga(event, '<?php echo $organism ?>')"><?php echo $organism ?></button>
+        <button class="tablinks" id="button-<?php echo $organism?>"  onclick="openOrga('<?php echo $organism ?>')"><?php echo $organism ?></button>
     <?php } ?>
 </div>
 
