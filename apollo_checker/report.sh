@@ -44,8 +44,12 @@ echo "$res" | jq -c '.[]' | while read i; do
 # Get genome file
     genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
     file_numbers=`wc -l <<< "$genome_file"`
+    if [[ -z "$genome_file" ]]; then
+        echo "Error : no $orga.fa or $orga.fasta found in $genome_dir"
+        exit 1
+    fi
     if [[ "$file_numbers" != "1" ]]; then
-        echo "Could not find an unique genome file for organism '$orga': $file_numbers appropriate files found"
+        echo "Error : could not find an unique genome file for organism $orga : $file_numbers appropriate files found"
         echo "$genome_file"
         exit 1
     fi
