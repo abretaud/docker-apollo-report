@@ -18,6 +18,7 @@ else
         do
             APOLLO_ONLINE=$(curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" >/dev/null 2>&1; echo "$?")
             if [[ $APOLLO_ONLINE -eq 0 ]]; then
+                sleep 3
                 break
             fi
             sleep 3
