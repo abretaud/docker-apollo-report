@@ -118,36 +118,40 @@ else {
 <?php foreach ($users_to_show as $u => $data): ?>
     <h3 id="user-<?php echo $u ?>"><?php echo $u ?></h3>
 
-    <?php if (count($data['errors']) > 0): ?>
-        <p>The following <b><?php echo count($data['errors']) ?> errors</b> were found (blocking):</p><ul>
-        <?php foreach ($data['errors'] as $e): ?>
-            <li><?php echo $e ?></li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
+    <?php if (isset($data)): ?>
+        <?php if (count($data['errors']) > 0): ?>
+            <p>The following <b><?php echo count($data['errors']) ?> errors</b> were found (blocking):</p><ul>
+            <?php foreach ($data['errors'] as $e): ?>
+                <li><?php echo $e ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
-    <?php if (count($data['warnings']) > 0): ?>
-        <p>The following <b><?php echo count($data['warnings']) ?> warnings</b> were found (non blocking, potential issues):</p><ul>
-        <?php foreach ($data['warnings'] as $w): ?>
-            <li><?php echo $w ?></li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
+        <?php if (count($data['warnings']) > 0): ?>
+            <p>The following <b><?php echo count($data['warnings']) ?> warnings</b> were found (non blocking, potential issues):</p><ul>
+            <?php foreach ($data['warnings'] as $w): ?>
+                <li><?php echo $w ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
-    <?php if (count($data['ok']) > 0): ?>
-        <p>The following <b><?php echo count($data['ok']) ?></b> genes are <b>valid</b>:</p><ul>
-        <?php foreach ($data['ok'] as $o): ?>
-            <li><?php echo $o ?></li>
-        <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
+        <?php if (count($data['ok']) > 0): ?>
+            <p>The following <b><?php echo count($data['ok']) ?></b> genes are <b>valid</b>:</p><ul>
+            <?php foreach ($data['ok'] as $o): ?>
+                <li><?php echo $o ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
-    <?php if (count($data['deleted']) > 0): ?>
-        <p>The following <b><?php echo count($data['deleted']) ?></b> genes will be <b>deleted</b>:</p><ul>
-        <?php foreach ($data['deleted'] as $o): ?>
-            <li><?php echo $o ?></li>
-        <?php endforeach; ?>
-        </ul>
+        <?php if (count($data['deleted']) > 0): ?>
+            <p>The following <b><?php echo count($data['deleted']) ?></b> genes will be <b>deleted</b>:</p><ul>
+            <?php foreach ($data['deleted'] as $o): ?>
+                <li><?php echo $o ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    <?php else: ?>
+       No gene
     <?php endif; ?>
 <?php endforeach; ?>
 
