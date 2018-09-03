@@ -33,7 +33,7 @@ fi
 res=`curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms"`
 echo -n "" > "$output_dir/full_report.json"
 
-echo "$res" | jq -c '.[]' | while read i; do
+echo "$res" | jq -c '.[]' | while read -r i; do
     tmp_dir=`mktemp -d`
     cd "$tmp_dir"
     orga=`echo $i | jq ".commonName"`
