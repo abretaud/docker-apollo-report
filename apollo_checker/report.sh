@@ -37,8 +37,9 @@ echo "$res" | jq -c '.[]' | while read -r i; do
     tmp_dir=`mktemp -d`
     cd "$tmp_dir"
     orga=`echo $i | jq ".commonName"`
-    orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"`
-    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', organism:'$orga', 'sequences':[]}" "$wa_url/IOService/write"`
+    orga_remote=`sed -e 's/^"//' -e 's/"$//' <<<"${orga}"` # The name of the organism in apollo
+    orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"` # The name of the organism here (safer)
+    res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'organism':'$orga_remote', 'sequences':[]}" "$wa_url/IOService/write"`
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
 # Get genome file
@@ -49,12 +50,12 @@ echo "$res" | jq -c '.[]' | while read -r i; do
         exit 1
     fi
     if [[ "$file_numbers" != "1" ]]; then
-        echo "Error : could not find an unique genome file for organism $orga : $file_numbers appropriate files found"
+        echo "Error : could not find an unique genome file for organism $orga_remote : $file_numbers appropriate files found"
         echo "$genome_file"
         exit 1
     fi
 
-    echo "Generating report for '$orga' in $orga_output_dir using genome $genome_file"
+    echo "Generating report for '$orga_remote' in $orga_output_dir using genome $genome_file"
 
     mkdir -p "$orga_output_dir"
 
