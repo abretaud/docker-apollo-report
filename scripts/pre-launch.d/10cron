@@ -31,7 +31,7 @@ else
 
         # Generate report
         $RES = $(curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" 2> /dev/null)
-        $ORG = $(echo $RES | wc -c)
+        $ORGS = $(echo $RES | wc -c)
         echo $RES | grep -q "Not authorized for any organisms"
         if [[ $?  -eq 1]]; then
             if ! [[ $ORGS -eq 0 ]]; then
