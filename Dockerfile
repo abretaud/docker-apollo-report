@@ -27,9 +27,6 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
 
 RUN pip install bcbio-gff biopython
 
-# Avoid issues down the line
-RUN mkdir -p /data/genomes
-
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
     APOLLO_PASS="password" \
