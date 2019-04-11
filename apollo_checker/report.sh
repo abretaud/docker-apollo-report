@@ -47,7 +47,7 @@ echo "$res" | jq -c '.[]' | while read -r i; do
         APOLLO_MOUNTPOINT=${APOLLO_MOUNTPOINT%/}
         internal_path=`echo $i | jq ".directory" | sed 's/\/[^\/]*//' | sed 's/"//g'`
         orga="genome"
-        genome_dir="$APOLLO_MOUNTPOINT/$internal_path/seq/"
+        genome_dir="$APOLLO_MOUNTPOINT""$internal_path/seq/"
         genome_file=`find "$genome_dir" -iname "$orga.fasta" -type f`
     else
         genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
