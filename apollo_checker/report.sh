@@ -43,7 +43,15 @@ echo "$res" | jq -c '.[]' | while read -r i; do
     uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
     orga_output_dir="$output_dir/$orga"
 # Get genome file
-    genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
+    if [[ -n "$APOLLO_MOUNTPOINT" ]]; then
+        APOLLO_MOUNTPOINT=${APOLLO_MOUNTPOINT%/}
+        internal_path=`echo $i | jq ".directory" | sed 's/\/[^\/]*//' | sed 's/"//g'`
+        orga="genome"
+        genome_dir="$APOLLO_MOUNTPOINT""$internal_path/seq/"
+        genome_file=`find "$genome_dir" -iname "$orga.fasta" -type f`
+    else
+        genome_file=`find "$genome_dir" -iname "$orga.fa" -o -iname "$orga.fasta" -type f`
+    fi
     file_numbers=`wc -l <<< "$genome_file"`
     if [[ -z "$genome_file" ]]; then
         echo "Error : no $orga.fa or $orga.fasta found in $genome_dir"

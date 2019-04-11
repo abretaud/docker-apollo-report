@@ -30,6 +30,7 @@ RUN pip install bcbio-gff biopython
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
     APOLLO_PASS="password" \
+    APOLLO_MOUNTPOINT=""\
     ALL_ADMINS=0 \
     DETAILED_REPORT=0 \
     ANNOTATION_GROUPS=1 \

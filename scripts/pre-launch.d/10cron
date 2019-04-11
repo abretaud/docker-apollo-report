@@ -32,8 +32,9 @@ else
         # Generate report
         RES=$(curl --header "Content-Type:application/json" -d"{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS'}" "$wa_url/organism/findAllOrganisms" 2> /dev/null)
         ORGS=$(echo $RES | wc -c)
-        echo $RES | grep -q "Not authorized for any organisms"
-        if [[ $?  -eq 1 ]]; then
+        GREP_RESULT=1
+        echo $RES | grep -q "Not authorized for any organisms" || GREP_RESULT=0
+        if [[ $GREP_RESULT -eq 0 ]]; then
             if ! [[ $ORGS -eq 0 ]]; then
                 /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genomes/ /data/report/
             else
