@@ -8,6 +8,29 @@ This image contains everything needed to generate an Apollo per-user report each
 
 We highly recommend using a `docker-compose.yml` to run your containers.
 
+Apollo-report needs to have access to the full genome sequence in fasta format of each genome. If you have access to the directory used by Apollo to store all its jbrowse data, you will want to run it like that:
+
+```yaml
+version: "2"
+services:
+  report:
+    image: quay.io/abretaud/apollo-report:latest
+    environment:
+        APOLLO_URL: http://apollo:8080/ # Full URL to the Apollo server
+        APOLLO_EXT_URL: http://example.org/somewhere/apollo/ # Full URL to the Apollo server, accessible from anywhere (default= APOLLO_URL)
+        APOLLO_USER: admin@apollo # Admin account to connect to apollo
+        APOLLO_PASS: password # Password to connect to apollo
+        ADMIN_USERS: userx@apollo,usery@apollo # Set this to a list of users who will have access to all the data from all users.
+        APOLLO_MOUNTPOINT: /apollo-data/
+    volumes:
+        - ./apollo_data_dir/:/apollo-data/:ro #
+        - ./my_annotation_groups.tsv:/data/annotation_groups.tsv:ro # If you have annotation groups, mount the list file on this location
+    ports:
+      - "3000:80"
+```
+
+Otherwise, you can directly mount fasta files in a specific directory:
+
 ```yaml
 version: "2"
 services:
@@ -45,4 +68,5 @@ ANNOTATION_GROUPS: 1 # Set this to 0 if you don't want to validate AnnotGroup at
 SPLIT_USERS: 1 # Set this to 0 if you don't want to remove the @something suffix from apollo user names
 REPORT_JSON_PATH: /data/report/full_report.json # Location for a temp file, no need to change this in most cases
 LOCAL_ONLY: for testing purpose only, will not try to contact a remote apollo server, will expect a raw gff extract from apollo to be mounted on /data/raw_apollo.gff, and a genome to be mounted on /data/genome.fa
+APOLLO_MOUNTPOINT: path to the mounted Apollo data directory (if mounted)
 ```
