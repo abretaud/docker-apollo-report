@@ -90,7 +90,7 @@ echo "$res" | jq -c '.[]' | while read -r i; do
         -x "$orga_output_dir/valid_cds.fa" \
         -y "$orga_output_dir/valid_proteins.fa"
 
-    echo -n "\"$orga\""":" >> "$output_dir/full_report.json"
+    echo -n "\"$orga_remote\""":" >> "$output_dir/full_report.json"
     cat "$orga_output_dir/report.json" >> "$output_dir/full_report.json"
     echo "" >> "$output_dir/full_report.json"
     cp "$raw_apollo_gff" "$orga_output_dir/$raw_apollo_gff"
