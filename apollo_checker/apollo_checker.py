@@ -395,7 +395,7 @@ class WAChecker():
         seen_symbols = {}
         warned_symbols = []
         for g in self.all_genes.values():
-            if not g.allele and not g.part and not g.is_deleted:
+            if not g.allele and not g.part and not g.is_deleted and g.symbol is not None:
                 if g.symbol not in seen_symbols:
                     seen_symbols[g.symbol] = g
                 else:
@@ -407,7 +407,7 @@ class WAChecker():
         seen_names = {}
         warned_names = []
         for g in self.all_genes.values():
-            if not g.allele and not g.part and not g.is_deleted:
+            if not g.allele and not g.part and not g.is_deleted and g.name is not None:
                 if g.name not in seen_names:
                     seen_names[g.name] = g
                 else:
