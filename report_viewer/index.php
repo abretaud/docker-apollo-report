@@ -28,6 +28,10 @@
 
 <h1>Manual annotation report</h1>
 
+<?php if (empty($report_content)): ?>
+      <p>Failed to load report, please come back later.</p>
+<?php else: ?>
+
 <p>This is an automatic report concerning the genes that were manually annotated.</p>
 
 <p>This report is updated every night, and the present report have been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?>  (Paris, France time).</p>
@@ -227,6 +231,6 @@ else {
 <?php endif; ?>
 </div>
 <?php };?>
-
+<?php endif; ?>
 </body>
 </html>
