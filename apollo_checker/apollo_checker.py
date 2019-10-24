@@ -1,18 +1,22 @@
 #!/usr/bin/python
 
-import sys, os, re
 import argparse
+import os
+import re
+import sys
 
 from BCBio import GFF
+
 from Bio import SeqIO
 
 from wacheck.Gene import Gene
 from wacheck.error.GeneError import GeneError
 from wacheck.error.WAError import WAError
-from wacheck.report.AdminTextReport import AdminTextReport
 from wacheck.report.AdminHtmlReport import AdminHtmlReport
 from wacheck.report.AdminJsonReport import AdminJsonReport
+from wacheck.report.AdminTextReport import AdminTextReport
 from wacheck.report.UserHtmlReport import UserHtmlReport
+
 
 class WAChecker():
 
@@ -72,7 +76,6 @@ class WAChecker():
         if self.output_deleted:
             self.write_deleted(oks)
 
-
     def parse_groups(self):
         self.allowed_groups = {}
         self.groups_stats = {}
@@ -81,7 +84,7 @@ class WAChecker():
             for g in groups:
                 gattrs = g.strip().split("\t")
                 if len(gattrs) < 1 or len(gattrs) > 2:
-                    print "Failed loading annotation groups on line: "+user
+                    print("Failed loading annotation groups on line: %s" % g)
                     sys.exit(1)
                 if len(gattrs) == 2:
                     gos = [id.strip() for id in gattrs[1].strip().split(",")]
@@ -94,8 +97,8 @@ class WAChecker():
             all_ok = []
             deleted = []
             for o in oks:
-                all_ok += [ x.wa_id for x in oks[o] if not x.is_deleted ]
-                deleted += [ x.wa_id for x in oks[o] if x.is_deleted ]
+                all_ok += [x.wa_id for x in oks[o] if not x.is_deleted]
+                deleted += [x.wa_id for x in oks[o] if x.is_deleted]
 
         output_source = ["apollo"]
 
@@ -113,11 +116,11 @@ class WAChecker():
                     if (f.type == "gene") and (f.qualifiers['ID'][0] in all_ok):
                         f.qualifiers['source'] = output_source
                         new_feats.append(f)
-                        for child in f.sub_features: # mRNA
+                        for child in f.sub_features:  # mRNA
                             child.qualifiers['source'] = output_source
-                            for gchild in child.sub_features: # exons, cds, ...
+                            for gchild in child.sub_features:  # exons, cds, ...
                                 gchild.qualifiers['source'] = output_source
-                                for ggchild in gchild.sub_features: # exotic stuff (non_canonical_five_prime_splice_site non_canonical_three_prime_splice_site stop_codon_read_through)
+                                for ggchild in gchild.sub_features:  # exotic stuff (non_canonical_five_prime_splice_site non_canonical_three_prime_splice_site stop_codon_read_through)
                                     ggchild.qualifiers['source'] = output_source
 
                 rec.features = new_feats
@@ -144,11 +147,11 @@ class WAChecker():
                     if (f.type != "gene" or ((f.type == "gene") and (f.qualifiers['ID'][0] not in all_ok))):
                         f.qualifiers['source'] = output_source
                         new_feats.append(f)
-                        for child in f.sub_features: # mRNA
+                        for child in f.sub_features:  # mRNA
                             child.qualifiers['source'] = output_source
-                            for gchild in child.sub_features: # exons, cds, ...
+                            for gchild in child.sub_features:  # exons, cds, ...
                                 gchild.qualifiers['source'] = output_source
-                                for ggchild in gchild.sub_features: # exotic stuff (non_canonical_five_prime_splice_site non_canonical_three_prime_splice_site stop_codon_read_through)
+                                for ggchild in gchild.sub_features:  # exotic stuff (non_canonical_five_prime_splice_site non_canonical_three_prime_splice_site stop_codon_read_through)
                                     ggchild.qualifiers['source'] = output_source
 
                 rec.features = new_feats
@@ -164,7 +167,7 @@ class WAChecker():
         # Write output tsv
         deleted = []
         for o in oks:
-            deleted += [ x.name for x in oks[o] if x.is_deleted ]
+            deleted += [x.name for x in oks[o] if x.is_deleted]
 
         out_handle = open(self.output_deleted, "w")
 
@@ -172,7 +175,6 @@ class WAChecker():
             out_handle.write(d + '\n')
 
         out_handle.close()
-
 
     def parse_args(self):
 
@@ -194,7 +196,7 @@ class WAChecker():
 
         self.wa_url = args.apollo
         if not self.wa_url.endswith('/'):
-            self.wa_url +=  '/'
+            self.wa_url += '/'
         self.genome = os.path.abspath(args.genome)
         if args.groups:
             self.groups_file = os.path.abspath(args.groups)
@@ -224,11 +226,10 @@ class WAChecker():
         self.split_users = args.split_users
 
         if self.report_dir and not os.path.isdir(self.report_dir):
-            print "Directory '%s' does not exist" % self.report_dir
+            print("Directory '%s' does not exist" % self.report_dir)
             sys.exit(1)
 
-        print "Reading gff file '"+self.in_file+"'"
-
+        print("Reading gff file '%s'" % self.in_file)
 
     def compute_scaf_lengths(self):
         # Compute the length of each scaffold
@@ -270,7 +271,7 @@ class WAChecker():
                     if new_part:
                         part_gene_key = gene.display_id
                         if new_allele:
-                            part_gene_key = gene.display_id+", allele "+new_allele
+                            part_gene_key = gene.display_id + ", allele " + new_allele
                         if part_gene_key not in self.splitted_genes:
                             self.splitted_genes[part_gene_key] = {}
                         if new_part in self.splitted_genes[part_gene_key]:
@@ -279,7 +280,6 @@ class WAChecker():
                             gene.errors.append(GeneError(GeneError.PART_SAME, gene, {'other_name': identical.display_id, 'other_scaff': identical.scaffold, 'other_start': identical.f.location.start, 'other_end': identical.f.location.end}))
 
                         self.splitted_genes[part_gene_key][new_part] = gene
-
 
                     # keep track of duplicated genes
                     if new_allele:
@@ -304,7 +304,6 @@ class WAChecker():
 
         in_handle.close()
 
-
     def errors_by_users(self):
 
         errors = {}
@@ -316,7 +315,6 @@ class WAChecker():
 
         return errors
 
-
     def warnings_by_users(self):
 
         warnings = {}
@@ -327,7 +325,6 @@ class WAChecker():
             warnings[g.owner].extend(g.warnings)
 
         return warnings
-
 
     def ok_by_users(self):
 
@@ -341,7 +338,6 @@ class WAChecker():
 
         return ok
 
-
     def genes_by_users(self):
 
         genes = {}
@@ -352,7 +348,6 @@ class WAChecker():
             genes[g.owner].append(g)
 
         return genes
-
 
     def genes_by_groups(self):
 
@@ -366,7 +361,6 @@ class WAChecker():
 
         return groups
 
-
     def post_validation(self):
 
         # validate splitted and duplicated genes once we collected the whole list
@@ -375,9 +369,9 @@ class WAChecker():
                 for p in self.splitted_genes[s].keys():
                     gene = self.splitted_genes[s][p]
 
-                    if len(gene.display_id) == 32 and re.match("^[A-F0-9]+$", gene.display_id): # If there is no name, it's probably the cause of the problem
+                    if len(gene.display_id) == 32 and re.match("^[A-F0-9]+$", gene.display_id):  # If there is no name, it's probably the cause of the problem
                         gene.errors.append(GeneError(GeneError.PART_SINGLE, gene))
-                    else: # If there is a symbol it's probably an incomplete gene
+                    else:  # If there is a symbol it's probably an incomplete gene
                         gene.warnings.append(GeneError(GeneError.PART_SINGLE_NAMED, gene))
 
                     self.all_genes[gene.wa_id] = gene
