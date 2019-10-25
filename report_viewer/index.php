@@ -1,5 +1,5 @@
 <?php
-    $report_content = file_get_contents(getenv('REPORT_JSON_PATH'));
+    $report_content = file_get_contents(getenv('REPORT_PATH') . "full_report.json");
     $report_dict = json_decode($report_content, true);
 
     $user = $_SERVER['PHP_AUTH_USER'];
@@ -53,6 +53,8 @@ if ($is_admin) {
 else {
     $users_to_show = [$user => $report['genes_by_users'][$user]];
 }
+
+$org_id = str_replace(' ', '_', $organism);
 ?>
 
 <div id="<?php echo $organism ?>" class="tabcontent" >
@@ -66,6 +68,15 @@ else {
           <li><b><?php echo count($report['splitted']); ?></b> genes (or alleles) with multiple parts</li>
           <li><b><?php echo $report['global_stats']['total_deleted']; ?></b> deleted genes</li>
           <li><b><?php echo $report['global_stats']['goid']; ?></b> genes have at least one goid</li>
+    </ul>
+
+    <p>Downloads:</p>
+    <ul>
+        <li><a href="./<?php echo $org_id."/raw_apollo.gff"; ?>">Raw GFF3 from Apollo</a></li>
+        <li><a href="./<?php echo $org_id."/valid.gff"; ?>">GFF3 of valid genes</a> (<a href="./<?php echo $org_id."/valid_transcripts.fa"; ?>">transcripts FASTA</a>, <a href="./<?php echo $org_id."/valid_cds.fa"; ?>">CDS FASTA</a>, <a href="./<?php echo $org_id."/valid_proteins.fa"; ?>">proteins FASTA</a>)</li>
+        <li><a href="./<?php echo $org_id."/invalid.gff"; ?>">GFF3 of invalid genes</a></li>
+        <li><a href="./<?php echo $org_id."/deleted.tsv"; ?>">List of genes marked as deleted</a></li>
+        <li><a href="./<?php echo $org_id."/by_group/"; ?>">GFF3 and FASTA for each groups</a></li>
     </ul>
 <?php endif; ?>
 

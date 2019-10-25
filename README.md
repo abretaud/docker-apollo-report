@@ -66,7 +66,7 @@ ALL_ADMINS: 0 # Set this to 1 if you want users to have access to other users in
 DETAILED_REPORT: 0 # Set this to 1 if you want to display more detailed information for admin users
 ANNOTATION_GROUPS: 1 # Set this to 0 if you don't want to validate AnnotGroup attribute
 SPLIT_USERS: 1 # Set this to 0 if you don't want to remove the @something suffix from apollo user names
-REPORT_JSON_PATH: /data/report/full_report.json # Location for a temp file, no need to change this in most cases
+REPORT_PATH: /data/report/ # Location for report files, no need to change this in most cases
 LOCAL_ONLY: for testing purpose only, will not try to contact a remote apollo server, will expect a raw gff extract from apollo to be mounted on /data/raw_apollo.gff, and a genome to be mounted on /data/genome.fa
 APOLLO_MOUNTPOINT: path to the mounted Apollo data directory (if mounted)
 ```

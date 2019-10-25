@@ -5,7 +5,7 @@ chmod a+x /data/report/
 if [[ $LOCAL_ONLY == "1" ]]
 then
     echo "Local only mode, will generate report on /data/raw_apollo.gff"
-    /opt/apollo_checker/report_local.sh "${APOLLO_EXT_URL}" /data/genome.fa /data/report/
+    /opt/apollo_checker/report.sh "${APOLLO_EXT_URL}" "/data/report/" "" ""
 else
 
     # Update the report if not existing yet
@@ -36,7 +36,7 @@ else
         echo $RES | grep -q "Not authorized for any organisms" || GREP_RESULT=0
         if [[ $GREP_RESULT -eq 0 ]]; then
             if ! [[ $ORGS -eq 0 ]]; then
-                /opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genomes/ /data/report/
+                /opt/apollo_checker/report.sh "${APOLLO_EXT_URL}" "/data/report/" "${APOLLO_URL}" "/data/genomes/"
             else
                 #Backward compatibility
                 echo "No organism found on Apollo server, skipping report generation"
@@ -46,7 +46,7 @@ else
         fi
     fi
 
-    echo "@daily    (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_URL}" "${APOLLO_EXT_URL}" /data/genomes/ /data/report/ 2>> /var/log/apollo_report.log')" > cron
+    echo "@daily    (bash -lc '/opt/apollo_checker/report.sh "${APOLLO_EXT_URL}" "/data/report/" "${APOLLO_URL}" /data/genomes/ 2>> /var/log/apollo_report.log')" > cron
     crontab cron && rm cron
 
     service cron start

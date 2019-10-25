@@ -83,7 +83,7 @@ class AdminJsonReport(HtmlReport):
         for gene, parts in self.splitted_genes.items():
             pl = ()
             for p_id, part in parts.items():
-                pl += ("<a href=\"" + self.get_wa_url(part.scaffold, part.f.location.start, part.f.location.end) + "\">" + p_id + "</a>",)
+                pl += ("<a href=\"" + self.get_wa_url(part) + "\">" + p_id + "</a>",)
             res[gene] = sorted(pl)
 
         return res
@@ -111,7 +111,7 @@ class AdminJsonReport(HtmlReport):
         for gene, copies in self.duplicated_genes.items():
             pl = ()
             for c_id, copy in copies.items():
-                pl += ("<a href=\"" + self.get_wa_url(copy.scaffold, copy.f.location.start, copy.f.location.end) + "\">" + c_id + "</a> (" + ("-" if str(copy.f.location.strand) == "-1" else "+") + ")",)
+                pl += ("<a href=\"" + self.get_wa_url(copy) + "\">" + c_id + "</a> (" + ("-" if str(copy.f.location.strand) == "-1" else "+") + ")",)
             res[gene] = pl
 
         return res

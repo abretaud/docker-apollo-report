@@ -1,21 +1,34 @@
 #!/usr/bin/python
 
 import argparse
+import copy
 import os
 import re
 import sys
+import unicodedata
+
 
 from BCBio import GFF
 
 from Bio import SeqIO
 
+import unicode
+
 from wacheck.Gene import Gene
 from wacheck.error.GeneError import GeneError
 from wacheck.error.WAError import WAError
-from wacheck.report.AdminHtmlReport import AdminHtmlReport
 from wacheck.report.AdminJsonReport import AdminJsonReport
-from wacheck.report.AdminTextReport import AdminTextReport
-from wacheck.report.UserHtmlReport import UserHtmlReport
+
+
+def slugify(value):
+    """
+    Normalizes string, converts to lowercase, removes non-alpha characters,
+    and converts spaces to hyphens.
+    """
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(re.sub(r'[^\w\s-]', '', value).strip().lower())
+    value = unicode(re.sub(r'[-\s]+', '-', value))
+    return value
 
 
 class WAChecker():
@@ -26,8 +39,6 @@ class WAChecker():
 
         # Prepare internal properties
         self.group_tags = ['AnnotGroup']
-        if self.apollo_1x:
-            self.group_tags += ['SFAnnot', 'CCAnnot', 'SF Annot']
         self.all_genes = {}
         self.wa_errors = []
         self.genes_seen_once = 0
@@ -46,35 +57,20 @@ class WAChecker():
         errors = self.errors_by_users()
         warnings = self.warnings_by_users()
         oks = self.ok_by_users()
+        oks_by_groups = self.ok_by_groups()
 
         self.names = sorted(self.genes_by_users().keys())
 
-        # Admin report in txt
-        admin_txt_report = AdminTextReport(self, oks, errors, warnings)
-        admin_txt_report.render()
-        if self.report_admin_txt:
-            admin_txt_report.save_to_file(self.report_admin_txt)
+        # Write reports
+        admin_json_report = AdminJsonReport(self, oks, errors, warnings)
+        admin_json_report.save_to_file(self.report_admin_json)
 
-        # Admin report in html
-        if self.report_admin_html:
-            admin_html_report = AdminHtmlReport(self, oks, errors, warnings)
-            admin_html_report.save_to_file(self.report_admin_html)
+        self.write_gff(oks)
 
-        # Write user html reports if asked
-        if self.report_dir:
-            user_html_report = UserHtmlReport(self, oks, errors, warnings)
-            user_html_report.save_to_dir(self.report_dir)
+        if not self.no_group:
+            self.write_gff_by_groups(oks_by_groups)
 
-        # Admin report in json
-        if self.report_admin_json:
-            admin_json_report = AdminJsonReport(self, oks, errors, warnings)
-            admin_json_report.save_to_file(self.report_admin_json)
-
-        if self.output_valid or self.output_invalid:
-            self.write_gff(oks)
-
-        if self.output_deleted:
-            self.write_deleted(oks)
+        self.write_deleted(oks)
 
     def parse_groups(self):
         self.allowed_groups = {}
@@ -163,6 +159,54 @@ class WAChecker():
             in_handle.close()
             out_inv_handle.close()
 
+    def write_gff_by_groups(self, oks):
+
+        output_source = ["apollo"]
+
+        # Write output GFF
+        waid_to_group = {}
+        for group in oks:
+            waid_to_group += {x.wa_id: group for x in oks[group] if not x.is_deleted}
+
+        in_handle = open(self.in_file)
+
+        recs = {}
+        for rec in GFF.parse(in_handle):
+            new_feats = {}
+
+            for f in rec.features:
+                if (f.type == "gene") and (f.qualifiers['ID'][0] in waid_to_group):
+                    group = waid_to_group[f.qualifiers['ID'][0]]
+                    f.qualifiers['source'] = output_source
+                    if group not in new_feats:
+                        new_feats[group] = []
+                    new_feats[group].append(f)
+                    for child in f.sub_features:  # mRNA
+                        child.qualifiers['source'] = output_source
+                        for gchild in child.sub_features:  # exons, cds, ...
+                            gchild.qualifiers['source'] = output_source
+                            for ggchild in gchild.sub_features:  # exotic stuff (non_canonical_five_prime_splice_site non_canonical_three_prime_splice_site stop_codon_read_through)
+                                ggchild.qualifiers['source'] = output_source
+
+            for group in new_feats:
+                rec.annotations = {}
+                rec.seq = ""
+                newrec = copy.deepcopy(rec)
+                newrec.features = new_feats[group]
+
+                if len(newrec.features):
+                    if group not in recs:
+                        recs[group] = []
+                    recs[group].append(newrec)
+
+        for group in recs:
+            out_file = os.path.join(self.output_by_groups, "%s.gff" % slugify(group))
+            out_handle = open(out_file, "w")
+            GFF.write(recs[group], out_handle)
+            out_handle.close()
+
+        in_handle.close()
+
     def write_deleted(self, oks):
         # Write output tsv
         deleted = []
@@ -183,14 +227,7 @@ class WAChecker():
         parser.add_argument("genome", help="Genome file (fasta)")
         parser.add_argument("-g", "--groups", help="List of annotation groups (optional, tabular, col1=human readable name, col2=comma-separated list of GO ids (GO:0000000))")
         parser.add_argument("-a", "--apollo", help="Apollo server url", required=True)
-        parser.add_argument("-o", "--out_gff", help="Output gff file where valid genes will be written")
-        parser.add_argument("-i", "--out_inv_gff", help="Output gff file where invalid genes will be written")
-        parser.add_argument("-d", "--out_deleted", help="Output the list of deleted genes in given file")
-        parser.add_argument("--report_dir", help="Output directory where report files will be created (one file by user)")
-        parser.add_argument("--report_admin_txt", help="Output an admin report in TXT format to given path")
-        parser.add_argument("--report_admin_json", help="Output an admin report in JSON format to given path")
-        parser.add_argument("--report_admin_html", help="Output an admin report in HTML format to given path")
-        parser.add_argument("--apollo-1x", action="store_true", help="Add this flag when the --in_gff file comes from an Apollo 1.X version")
+        parser.add_argument("-o", "--out", help="Output directory")
         parser.add_argument("--split-users", action="store_true", help="Add this flag to remove the @something suffix from apollo user names")
         args = parser.parse_args()
 
@@ -206,28 +243,18 @@ class WAChecker():
             self.no_group = True
 
         self.in_file = os.path.abspath(args.in_gff)
-        self.output_valid = os.path.abspath(args.out_gff)
-        self.output_invalid = os.path.abspath(args.out_inv_gff)
-        self.output_deleted = os.path.abspath(args.out_deleted)
-        self.report_dir = None
-        if args.report_dir:
-            self.report_dir = os.path.abspath(args.report_dir)
-        self.report_admin_txt = None
-        if args.report_admin_txt:
-            self.report_admin_txt = os.path.abspath(args.report_admin_txt)
-        self.report_admin_html = None
-        if args.report_admin_html:
-            self.report_admin_html = os.path.abspath(args.report_admin_html)
-        self.report_admin_json = None
-        if args.report_admin_json:
-            self.report_admin_json = os.path.abspath(args.report_admin_json)
+        self.output_valid = os.path.join(os.path.abspath(args.out), 'valid.gff')
+        self.output_invalid = os.path.join(os.path.abspath(args.out), 'invalid.gff')
+        self.output_deleted = os.path.join(os.path.abspath(args.out), 'deleted.tsv')
+        self.report_admin_json = os.path.join(os.path.abspath(args.out), "report.json")
 
-        self.apollo_1x = args.apollo_1x
+        os.makedirs(args.out)
+
+        if not self.no_group:
+            self.output_by_groups = os.path.join(os.path.abspath(args.out), 'by_groups')
+            os.mkdir(self.output_by_groups)
+
         self.split_users = args.split_users
-
-        if self.report_dir and not os.path.isdir(self.report_dir):
-            print("Directory '%s' does not exist" % self.report_dir)
-            sys.exit(1)
 
         print("Reading gff file '%s'" % self.in_file)
 
@@ -244,7 +271,7 @@ class WAChecker():
             for f in rec.features:
                 if (f.type == "gene") and ('status' not in f.qualifiers or not f.qualifiers['status'] or f.qualifiers['status'][0].lower() != "deleted"):
 
-                    gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x, self.no_group, self.split_users)
+                    gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.no_group, self.split_users)
 
                     self.all_genes[gene.wa_id] = gene
 
@@ -295,11 +322,11 @@ class WAChecker():
 
                         self.duplicated_genes[allele_gene_key][new_allele] = gene
                 elif 'status' in f.qualifiers and f.qualifiers['status'] and f.qualifiers['status'][0].lower() == "deleted":
-                    gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x, self.no_group, self.split_users)
+                    gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.no_group, self.split_users)
 
                     self.all_genes[gene.wa_id] = gene
                 else:
-                    fake_gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags, self.apollo_1x)
+                    fake_gene = Gene(f, rec.id, self.scaf_lengths[rec.id], self.allowed_groups, self.group_tags)
                     self.wa_errors.append(WAError(WAError.UNEXPECTED_FEATURE, fake_gene))
 
         in_handle.close()
@@ -335,6 +362,19 @@ class WAChecker():
                 if g.owner not in ok:
                     ok[g.owner] = []
                 ok[g.owner].append(g)
+
+        return ok
+
+    def ok_by_groups(self):
+
+        ok = {}
+
+        for g in self.all_genes.values():
+            if len(g.errors) == 0:
+                for tag in g.group_tags:
+                    if tag not in ok:
+                        ok[tag] = []
+                    ok[tag].append(g)
 
         return ok
 

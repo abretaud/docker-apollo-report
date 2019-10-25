@@ -25,7 +25,9 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
  && cp cufflinks-2.2.1.Linux_x86_64/gffread /usr/bin/gffread \
  && rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz cufflinks-2.2.1.Linux_x86_64
 
-RUN pip install bcbio-gff biopython
+RUN pip install bcbio-gff biopython unicode
+
+RUN ln -s /data/report/ /var/www/html/report_data/
 
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
@@ -37,7 +39,7 @@ ENV APOLLO_URL="http://apollo:8080/" \
     SPLIT_USERS=1 \
     LOCAL_ONLY=0 \
     ENABLE_OP_CACHE=1 \
-    REPORT_JSON_PATH=/data/report/full_report.json
+    REPORT_PATH=/data/report/
 
 ADD entrypoint.sh /
 ADD ./scripts/ /scripts/
