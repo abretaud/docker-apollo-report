@@ -44,6 +44,6 @@ ADD ./scripts/ /scripts/
 ADD ./report_viewer/* /var/www/html/
 ADD ./apollo_checker/ /opt/apollo_checker/
 
-RUN ln -s /data/report/ /var/www/html/report_data/
+RUN ln -s /data/report/ /var/www/html/report_data
 
 CMD ["/entrypoint.sh"]
