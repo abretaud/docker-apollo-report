@@ -27,8 +27,6 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
 
 RUN pip install bcbio-gff biopython unicode
 
-RUN ln -s /data/report/ /var/www/html/report_data/
-
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
     APOLLO_PASS="password" \
@@ -45,5 +43,7 @@ ADD entrypoint.sh /
 ADD ./scripts/ /scripts/
 ADD ./report_viewer/* /var/www/html/
 ADD ./apollo_checker/ /opt/apollo_checker/
+
+RUN ln -s /data/report/ /var/www/html/report_data/
 
 CMD ["/entrypoint.sh"]
