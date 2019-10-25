@@ -136,7 +136,7 @@ class AdminJsonReport(HtmlReport):
 
         res = OrderedDict()
 
-        for g_name, g_num in iter(sorted(self.groups.iteritems(), key=lambda v: v[0].upper())):
+        for g_name, g_num in iter(sorted(self.groups.items(), key=lambda v: v[0].upper())):
             res[g_name] = g_num
 
         return res

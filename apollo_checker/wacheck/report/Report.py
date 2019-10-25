@@ -34,7 +34,7 @@ class Report:
             start = gene.f.location.start
             end = gene.f.location.end
 
-        return "%sannotator/loadLink?loc=%s%3A%s..%s" % (self.wa_url, gene.scaffold, start, end)
+        return "%sannotator/loadLink?loc=%s%%3A%s..%s" % (self.wa_url, gene.scaffold, start, end)
 
     def count_total_errors(self):
 

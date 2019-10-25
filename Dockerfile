@@ -16,7 +16,7 @@ VOLUME ["/data/report/"]
 # Install packages and PHP-extensions
 RUN apt-get -q update && \
     DEBIAN_FRONTEND=noninteractive apt-get -yq --no-install-recommends install \
-    wget git cron python-pip python-dev python-numpy jq python-setuptools \
+    wget git cron python3-pip python3-dev python3-numpy python3-setuptools jq \
  && rm -rf /var/lib/apt/lists/*
 
 # Install gffread
@@ -25,7 +25,7 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
  && cp cufflinks-2.2.1.Linux_x86_64/gffread /usr/bin/gffread \
  && rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz cufflinks-2.2.1.Linux_x86_64
 
-RUN pip install bcbio-gff biopython unicode
+RUN pip3 install bcbio-gff biopython
 
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \
@@ -43,6 +43,7 @@ ADD entrypoint.sh /
 ADD ./scripts/ /scripts/
 ADD ./report_viewer/* /var/www/html/
 ADD ./apollo_checker/ /opt/apollo_checker/
+ADD ./apache.conf /etc/apache2/conf-enabled/apollo_report.conf
 
 RUN ln -s /data/report/ /var/www/html/report_data
 

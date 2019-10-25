@@ -48,6 +48,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
 
     orga_output_dir="$output_dir/$orga"
     mkdir -p "$orga_output_dir"
+    rm -f $orga_output_dir/by_groups/*
     if [[ $LOCAL_ONLY != "1" ]]; then
         res=`curl --header "Content-Type:application/json" -d "{'username': '$APOLLO_USER', 'password': '$APOLLO_PASS', 'type':'GFF3', 'exportAllSequences':'true', 'chadoExportType':'', 'seqType':'genomic', 'exportGff3Fasta':'false', 'output':'file', 'format':'gzip', 'organism':'$orga_remote', 'sequences':[]}" "$wa_url/IOService/write"`
         uuid=`echo $res | sed "s/.*uuid\"\:\"\([-a-z0-9]\+\)\".*/\1/"`
@@ -87,7 +88,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
     fi
 
     # Launch the script to check gene models
-    python $SCRIPT_DIR/apollo_checker.py \
+    python3 $SCRIPT_DIR/apollo_checker.py \
         -a "$wa_ext_url" \
         -o "$orga_output_dir" \
         $OPTS \
@@ -100,7 +101,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
         -y "$orga_output_dir/valid_proteins.fa"
 
     if [[ $ANNOTATION_GROUPS == "1" ]]; then
-        for group_gff in $orga_output_dir/by_groups/*; do
+        for group_gff in $orga_output_dir/by_groups/*.gff; do
             group_name=$(basename "$group_gff" ".gff")
             gffread "$group_gff" -F -g "$genome_file" \
             -w "$orga_output_dir/by_groups/${group_name}_transcripts.fa" \

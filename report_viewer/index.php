@@ -72,11 +72,11 @@ $org_id = str_replace(' ', '_', $organism);
 
     <p>Downloads:</p>
     <ul>
-        <li><a href="./<?php echo $org_id."/raw_apollo.gff"; ?>">Raw GFF3 from Apollo</a></li>
-        <li><a href="./<?php echo $org_id."/valid.gff"; ?>">GFF3 of valid genes</a> (<a href="./<?php echo $org_id."/valid_transcripts.fa"; ?>">transcripts FASTA</a>, <a href="./<?php echo $org_id."/valid_cds.fa"; ?>">CDS FASTA</a>, <a href="./<?php echo $org_id."/valid_proteins.fa"; ?>">proteins FASTA</a>)</li>
-        <li><a href="./<?php echo $org_id."/invalid.gff"; ?>">GFF3 of invalid genes</a></li>
-        <li><a href="./<?php echo $org_id."/deleted.tsv"; ?>">List of genes marked as deleted</a></li>
-        <li><a href="./<?php echo $org_id."/by_group/"; ?>">GFF3 and FASTA for each groups</a></li>
+        <li><a href="./report_data/<?php echo $org_id."/raw_apollo.gff"; ?>">Raw GFF3 from Apollo</a></li>
+        <li><a href="./report_data/<?php echo $org_id."/valid.gff"; ?>">GFF3 of valid genes</a> (<a href="./report_data/<?php echo $org_id."/valid_transcripts.fa"; ?>">transcripts FASTA</a>, <a href="./report_data/<?php echo $org_id."/valid_cds.fa"; ?>">CDS FASTA</a>, <a href="./report_data/<?php echo $org_id."/valid_proteins.fa"; ?>">proteins FASTA</a>)</li>
+        <li><a href="./report_data/<?php echo $org_id."/invalid.gff"; ?>">GFF3 of invalid genes</a></li>
+        <li><a href="./report_data/<?php echo $org_id."/deleted.tsv"; ?>">List of genes marked as deleted</a></li>
+        <li><a href="./report_data/<?php echo $org_id."/by_group/"; ?>">GFF3 and FASTA for each groups</a></li>
     </ul>
 <?php endif; ?>
 

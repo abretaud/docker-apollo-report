@@ -7,12 +7,9 @@ import re
 import sys
 import unicodedata
 
-
 from BCBio import GFF
 
 from Bio import SeqIO
-
-import unicode
 
 from wacheck.Gene import Gene
 from wacheck.error.GeneError import GeneError
@@ -25,9 +22,9 @@ def slugify(value):
     Normalizes string, converts to lowercase, removes non-alpha characters,
     and converts spaces to hyphens.
     """
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub(r'[^\w\s-]', '', value).strip().lower())
-    value = unicode(re.sub(r'[-\s]+', '-', value))
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
+    value = re.sub(r'[-\s]+', '-', value)
     return value
 
 
@@ -57,7 +54,7 @@ class WAChecker():
         errors = self.errors_by_users()
         warnings = self.warnings_by_users()
         oks = self.ok_by_users()
-        oks_by_groups = self.ok_by_groups()
+        genes_by_groups = self.genes_by_groups()
 
         self.names = sorted(self.genes_by_users().keys())
 
@@ -68,7 +65,8 @@ class WAChecker():
         self.write_gff(oks)
 
         if not self.no_group:
-            self.write_gff_by_groups(oks_by_groups)
+            self.write_gff_by_groups(genes_by_groups, valid_only=True)
+            self.write_gff_by_groups(genes_by_groups, valid_only=False)
 
         self.write_deleted(oks)
 
@@ -159,16 +157,21 @@ class WAChecker():
             in_handle.close()
             out_inv_handle.close()
 
-    def write_gff_by_groups(self, oks):
+    def write_gff_by_groups(self, oks, valid_only):
 
         output_source = ["apollo"]
 
         # Write output GFF
         waid_to_group = {}
         for group in oks:
-            waid_to_group += {x.wa_id: group for x in oks[group] if not x.is_deleted}
+            waid_to_group = {**waid_to_group, **{x.wa_id: group for x in oks[group] if not x.is_deleted}}
 
-        in_handle = open(self.in_file)
+        if valid_only:
+            in_handle = open(self.output_valid)
+            suffix = "_valid"
+        else:
+            in_handle = open(self.in_file)
+            suffix = "_raw"
 
         recs = {}
         for rec in GFF.parse(in_handle):
@@ -200,10 +203,9 @@ class WAChecker():
                     recs[group].append(newrec)
 
         for group in recs:
-            out_file = os.path.join(self.output_by_groups, "%s.gff" % slugify(group))
-            out_handle = open(out_file, "w")
-            GFF.write(recs[group], out_handle)
-            out_handle.close()
+            out_file = os.path.join(self.output_by_groups, "%s%s.gff" % (slugify(group), suffix))
+            with open(out_file, "a") as out_handle:
+                GFF.write(recs[group], out_handle)
 
         in_handle.close()
 
@@ -248,11 +250,11 @@ class WAChecker():
         self.output_deleted = os.path.join(os.path.abspath(args.out), 'deleted.tsv')
         self.report_admin_json = os.path.join(os.path.abspath(args.out), "report.json")
 
-        os.makedirs(args.out)
+        os.makedirs(args.out, exist_ok=True)
 
         if not self.no_group:
             self.output_by_groups = os.path.join(os.path.abspath(args.out), 'by_groups')
-            os.mkdir(self.output_by_groups)
+            os.makedirs(self.output_by_groups, exist_ok=True)
 
         self.split_users = args.split_users
 
@@ -362,19 +364,6 @@ class WAChecker():
                 if g.owner not in ok:
                     ok[g.owner] = []
                 ok[g.owner].append(g)
-
-        return ok
-
-    def ok_by_groups(self):
-
-        ok = {}
-
-        for g in self.all_genes.values():
-            if len(g.errors) == 0:
-                for tag in g.group_tags:
-                    if tag not in ok:
-                        ok[tag] = []
-                    ok[tag].append(g)
 
         return ok
 

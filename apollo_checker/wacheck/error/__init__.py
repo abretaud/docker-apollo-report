@@ -1,2 +1,0 @@
-import GeneError
-import WAError
