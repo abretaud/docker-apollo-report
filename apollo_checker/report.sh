@@ -103,6 +103,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
         -y "$orga_output_dir/valid_proteins.fa"
 
     if [[ $ANNOTATION_GROUPS == "1" ]]; then
+      if find $orga_output_dir/by_groups/ -name "*.gff" | read; then
         for group_gff in $orga_output_dir/by_groups/*.gff; do
             group_name=$(basename "$group_gff" ".gff")
             gffread "$group_gff" -F -g "$genome_file" \
@@ -110,6 +111,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
             -x "$orga_output_dir/by_groups/${group_name}_cds.fa" \
             -y "$orga_output_dir/by_groups/${group_name}_proteins.fa"
         done
+      fi
     fi
 
     echo -n "\"$orga_remote\""":" >> "$output_dir/full_report.json"
