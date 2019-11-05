@@ -37,11 +37,13 @@ fi
 
 raw_apollo_gff_gz="$raw_apollo_gff.gz"
 
-cd "$tmp_dir"
 echo -n "" > "$output_dir/full_report.json"
 
 echo "$org_list" | jq -c '.[]' | while read -r i; do
     tmp_dir=`mktemp -d`
+
+    cd "$tmp_dir"
+
     orga=`echo $i | jq ".commonName"`
     orga_remote=`sed -e 's/^"//' -e 's/"$//' <<<"${orga}"` # The name of the organism in apollo
     orga=`sed -e 's/^"//' -e 's/"$//' <<<"${orga// /_}"` # The name of the organism here (safer)
@@ -116,6 +118,7 @@ echo "$org_list" | jq -c '.[]' | while read -r i; do
     cp "$raw_apollo_gff" "$orga_output_dir/$raw_apollo_gff"
 
     # Remove temp files
+    cd /tmp
     rm -rf $tmp_dir
 done
 
