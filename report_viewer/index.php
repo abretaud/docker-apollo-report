@@ -3,6 +3,10 @@
     $report_dict = json_decode($report_content, true);
 
     $user = $_SERVER['PHP_AUTH_USER'];
+    if (empty($user) && array_key_exists('HTTP_REMOTE_USER', $_SERVER)) {
+      $user = $_SERVER['HTTP_REMOTE_USER'];
+    }
+
     if (empty($user) || getenv("ALL_ADMINS") == "1") {
         $is_admin = true;
     }
