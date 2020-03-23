@@ -11,6 +11,8 @@ from BCBio import GFF
 
 from Bio import SeqIO
 
+from apollo import ApolloInstance
+
 from wacheck.Gene import Gene
 from wacheck.error.GeneError import GeneError
 from wacheck.error.WAError import WAError
@@ -58,8 +60,10 @@ class WAChecker():
 
         self.names = sorted(self.genes_by_users().keys())
 
+        permissions = self.get_permissions()
+
         # Write reports
-        admin_json_report = AdminJsonReport(self, oks, errors, warnings)
+        admin_json_report = AdminJsonReport(self, oks, errors, warnings, permissions)
         admin_json_report.save_to_file(self.report_admin_json)
 
         self.write_gff(oks)
@@ -69,6 +73,24 @@ class WAChecker():
             self.write_gff_by_groups(genes_by_groups, valid_only=False)
 
         self.write_deleted(oks)
+
+    def get_permissions(self):
+        ai = ApolloInstance(os.environ['APOLLO_URL'], os.environ['APOLLO_USER'], os.environ['APOLLO_PASS'])
+
+        groups = ai.groups.get_groups()
+        orgs_by_user = {}
+        for group in groups:
+            for org in group['organismPermissions']:
+                for group_user in group['users']:
+                    if self.split_users:
+                        user_name = re.sub(r"^(.+)@[a-zA-Z0-9]+$", r"\1", group_user['email'])
+                    else:
+                        user_name = group_user['email']
+
+                    if user_name not in orgs_by_user:
+                        orgs_by_user[user_name] = []
+                    orgs_by_user[user_name].append(org['organism'])
+        return orgs_by_user
 
     def parse_groups(self):
         self.allowed_groups = {}

@@ -44,11 +44,14 @@
 <br>
 <div class="tab">
     <?php foreach($report_dict as $organism=>$report) {?>
+      <?php if (array_key_exists($user, $report['permissions'])  && in_array($organism, $report['permissions'][$user])) { ?>
         <button class="tablinks" id="button-<?php echo $organism?>"  onclick="openOrga('<?php echo $organism ?>')"><?php echo $organism ?></button>
+      <?php } ?>
     <?php } ?>
 </div>
 
 <?php foreach($report_dict as $organism=>$report) {?>
+<?php if (array_key_exists($user, $report['permissions'])  && in_array($organism, $report['permissions'][$user])) { ?>
 
 <?php
 if ($is_admin) {
@@ -245,6 +248,7 @@ $org_id = str_replace(' ', '_', $organism);
     </ul>
 <?php endif; ?>
 </div>
+<?php } ?>
 <?php };?>
 <?php endif; ?>
 </body>

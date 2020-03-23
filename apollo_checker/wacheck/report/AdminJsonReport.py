@@ -7,9 +7,10 @@ from wacheck.report.HtmlReport import HtmlReport
 
 class AdminJsonReport(HtmlReport):
 
-    def __init__(self, checker, ok, errors, warnings):
+    def __init__(self, checker, ok, errors, warnings, permissions):
 
         HtmlReport.__init__(self, checker, ok, errors, warnings)
+        self.permissions = permissions
 
     def save_to_file(self, path):
 
@@ -175,5 +176,6 @@ class AdminJsonReport(HtmlReport):
         res['alleles'] = self.render_alleles()
         res['groups'] = self.render_groups()
         res['global_stats'] = self.render_stats()
+        res['permissions'] = self.permissions
 
         return json.dumps(res)
