@@ -76,7 +76,7 @@ class HtmlReport(Report):
             return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> have an invalid '" + e.error_desc['key'] + "' attribute value ('" + e.error_desc['value'] + "')"
 
         if e.code == GeneError.PART_SAME:
-            return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> and " + e.error_desc['other_name'] + " located at " + self.get_wa_url(e.error_desc['other_scaff'], e.error_desc['other_start'], e.error_desc['other_end']) + " are marked as the same part of a gene. If they are the same part of different alleles, add 'Allele' tags to both."
+            return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> and " + e.error_desc['other_name'] + " located at " + self.get_wa_url_other(e.error_desc['other_scaff'], e.error_desc['other_start'], e.error_desc['other_end']) + " are marked as the same part of a gene. If they are the same part of different alleles, add 'Allele' tags to both."
 
         if e.code == GeneError.PART_SINGLE:
             return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> is the only part of a gene. If the gene is complete, you should remove the 'part' tag. Otherwise, check that all the parts of the gene have exactly the same 'symbol'. If the gene is incomplete, leave it like this."
@@ -85,7 +85,7 @@ class HtmlReport(Report):
             return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> is the only part of a gene. If the gene is complete, you should remove the 'part' tag. Otherwise, check that all the parts of the gene have exactly the same 'symbol'. If the gene is incomplete, leave it like this."
 
         if e.code == GeneError.ALLELE_SAME:
-            return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> and " + e.error_desc['other_name'] + " located at " + self.get_wa_url(e.error_desc['other_scaff'], e.error_desc['other_start'], e.error_desc['other_end']) + " are marked as the same allele of a duplicated gene. If they are different parts of the same allele, add 'Part' tags to both."
+            return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> and " + e.error_desc['other_name'] + " located at " + self.get_wa_url_other(e.error_desc['other_scaff'], e.error_desc['other_start'], e.error_desc['other_end']) + " are marked as the same allele of a duplicated gene. If they are different parts of the same allele, add 'Part' tags to both."
 
         if e.code == GeneError.ALLELE_SINGLE:
             return "Gene <a href=\"" + self.get_wa_url(e) + "\">" + e.display_id + "</a> is the only allele of a gene. If the gene has no other allele, you should remove the 'allele' tag. Otherwise, check that all alleles of the same gene have the same 'symbol'"
@@ -167,7 +167,7 @@ class HtmlReport(Report):
             return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> have an invalid '" + w.error_desc['key'] + "' attribute value ('" + w.error_desc['value'] + "')"
 
         if w.code == GeneError.PART_SAME:
-            return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> and <a href=\"" + self.get_wa_url(w.error_desc['other_scaff'], w.error_desc['other_start'], w.error_desc['other_end']) + "\">" + w.error_desc['other_name'] + "</a> are marked as the same part of a gene. If they are the same part of different alleles, add 'Allele' tags to both."
+            return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> and <a href=\"" + self.get_wa_url_other(w.error_desc['other_scaff'], w.error_desc['other_start'], w.error_desc['other_end']) + "\">" + w.error_desc['other_name'] + "</a> are marked as the same part of a gene. If they are the same part of different alleles, add 'Allele' tags to both."
 
         if w.code == GeneError.PART_SINGLE:
             return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> is the only part of a gene. If the gene is complete, you should remove the 'part' tag. Otherwise, check that all the parts of the gene have exactly the same 'symbol'. If the gene is incomplete, leave it like this."
@@ -176,7 +176,7 @@ class HtmlReport(Report):
             return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> is the only part of a gene. If the gene is complete, you should remove the 'part' tag. Otherwise, check that all the parts of the gene have exactly the same 'symbol'. If the gene is incomplete, leave it like this."
 
         if w.code == GeneError.ALLELE_SAME:
-            return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> and <a href=\"" + self.get_wa_url(w.error_desc['other_scaff'], w.error_desc['other_start'], w.error_desc['other_end']) + "\">" + w.error_desc['other_name'] + "</a> are marked as the same allele of a duplicated gene. If they are different parts of the same allele, add 'Part' tags to both."
+            return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> and <a href=\"" + self.get_wa_url_other(w.error_desc['other_scaff'], w.error_desc['other_start'], w.error_desc['other_end']) + "\">" + w.error_desc['other_name'] + "</a> are marked as the same allele of a duplicated gene. If they are different parts of the same allele, add 'Part' tags to both."
 
         if w.code == GeneError.ALLELE_SINGLE:
             return "Gene <a href=\"" + self.get_wa_url(w) + "\">" + w.display_id + "</a> is the only allele of a gene. If the gene has no other allele, you should remove the 'allele' tag. Otherwise, check that all alleles of the same gene have the same 'symbol'"

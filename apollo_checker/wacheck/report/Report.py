@@ -36,6 +36,10 @@ class Report:
 
         return "%sannotator/loadLink?loc=%s%%3A%s..%s" % (self.wa_url, gene.scaffold, start, end)
 
+    def get_wa_url_other(self, scaff, start, end):
+
+        return "%sannotator/loadLink?loc=%s%%3A%s..%s" % (self.wa_url, scaff, start, end)
+
     def count_total_errors(self):
 
         self.total_errors = 0
