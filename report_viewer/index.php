@@ -38,7 +38,7 @@
 
 <p>This is an automatic report concerning the genes that were manually annotated.</p>
 
-<p>This report is updated every night, and the present report have been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?>  (Paris, France time).</p>
+<p>This report is updated every night, and the present report has been generated on: <?php echo $report_dict[key($report_dict)]["time"] ?>  (Paris, France time).</p>
 
 <p>The following organisms are available : </p>
 <br>
