@@ -65,7 +65,6 @@ $org_id = str_replace(' ', '_', $organism);
 ?>
 
 <div id="<?php echo $organism ?>" class="tabcontent" >
-<?php if ($is_admin): ?>
     <h2> General statistics for <?php echo $organism ?></h2>
 
     <p></p>
@@ -85,7 +84,6 @@ $org_id = str_replace(' ', '_', $organism);
         <li><a href="./report_data/<?php echo $org_id."/deleted.tsv"; ?>">List of genes marked as deleted</a></li>
         <li><a href="./report_data/<?php echo $org_id."/by_groups/"; ?>">GFF3 and FASTA for each groups</a></li>
     </ul>
-<?php endif; ?>
 
 
 <ul>
