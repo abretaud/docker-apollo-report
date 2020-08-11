@@ -90,17 +90,19 @@ $org_id = str_replace(' ', '_', $organism);
         <?php
             foreach ($report['genes_by_groups'] as $group_name => $data) {
                 $group_prefix = preg_replace('/[-\s]+/', '-', strtolower(trim(preg_replace('/[^\w\s-]/', '', $group_name))));
-                echo "<li>".$group_name." -&gt;
-                          Raw from Apollo: <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw.gff\">GFF3</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_cds.fa\">CDS</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_proteins.fa\">proteins</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_transcripts.fa\">transcripts</a>
-                          - Valid genes:
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid.gff\">GFF3</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_cds.fa\">CDS</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_proteins.fa\">proteins</a>
-                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_transcripts.fa\">transcripts</a>
-                      </li>";
+                if (file_exists("./report_data/".$org_id."/by_groups/".$group_prefix."_raw.gff")) {
+                    echo "<li>".$group_name." -&gt;
+                              Raw from Apollo: <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw.gff\">GFF3</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_cds.fa\">CDS</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_proteins.fa\">proteins</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_transcripts.fa\">transcripts</a>
+                              - Valid genes:
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid.gff\">GFF3</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_cds.fa\">CDS</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_proteins.fa\">proteins</a>
+                              <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_transcripts.fa\">transcripts</a>
+                          </li>";
+                }
             }
         ?>
         </ul>
