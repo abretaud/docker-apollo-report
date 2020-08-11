@@ -83,8 +83,29 @@ $org_id = str_replace(' ', '_', $organism);
         <li><a href="./report_data/<?php echo $org_id."/invalid.gff"; ?>">GFF3 of invalid genes</a></li>
         <li><a href="./report_data/<?php echo $org_id."/deleted.tsv"; ?>">List of genes marked as deleted</a></li>
         <li><a href="./report_data/<?php echo $org_id."/by_groups/"; ?>">GFF3 and FASTA for each groups</a></li>
-    </ul>
 
+    <?php if (getenv("ANNOTATION_GROUPS") == "1"): ?>
+        <li>Downloads by annotation groups:</li>
+        <ul>
+        <?php
+            foreach ($report['genes_by_groups'] as $group_name => $data) {
+                $group_prefix = preg_replace('/[-\s]+/', '-', strtolower(trim(preg_replace('/[^\w\s-]/', '', $group_name))));
+                echo "<li>".$group_name." -&gt;
+                          Raw from Apollo: <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw.gff\">GFF3</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_cds.fa\">CDS</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_proteins.fa\">proteins</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_raw_transcripts.fa\">transcripts</a>
+                          - Valid genes:
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid.gff\">GFF3</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_cds.fa\">CDS</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_proteins.fa\">proteins</a>
+                          <a href=\"./report_data/".$org_id."/by_groups/".$group_prefix."_valid_transcripts.fa\">transcripts</a>
+                      </li>";
+            }
+        ?>
+        </ul>
+    <?php endif; ?>
+    </ul>
 
 <ul>
 <?php if ($is_admin): ?>
