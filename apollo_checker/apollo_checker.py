@@ -37,7 +37,7 @@ class WAChecker():
         self.parse_args()
 
         # Prepare internal properties
-        self.group_tags = ['AnnotGroup']
+        self.group_tags = ['AnnotGroup', 'annotgroup']
         self.all_genes = {}
         self.wa_errors = []
         self.genes_seen_once = 0
