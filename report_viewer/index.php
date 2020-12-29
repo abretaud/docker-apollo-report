@@ -1,6 +1,7 @@
 <?php
     $report_content = file_get_contents(getenv('REPORT_PATH') . "full_report.json");
     $report_dict = json_decode($report_content, true);
+    ksort($report_dict);
 
     $user = $_SERVER['PHP_AUTH_USER'];
     if (empty($user) && array_key_exists('HTTP_REMOTE_USER', $_SERVER)) {
