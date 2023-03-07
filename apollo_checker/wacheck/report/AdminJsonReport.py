@@ -64,7 +64,7 @@ class AdminJsonReport(HtmlReport):
                     for w in gene.warnings:
                         res[group_name]['warnings'].append(self.render_warning(w))
 
-                if not gene.errors and not gene.warnings:
+                if not gene.errors:
                     if not gene.is_deleted:
                         res[group_name]['ok'].append(self.render_ok(gene))
                     # Deleted genes are not in any group...
