@@ -111,7 +111,7 @@ class Gene:
             if not re.match("^[A-Za-z0-9-_.()/]+$", symbol):
                 self.errors.append(GeneError(GeneError.SYMBOL_INVALID, self, {'symbol': symbol}))
 
-            elif re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", symbol):
+            elif re.match("^[A-Za-z]{2,10}[0-9]{5,10}-R[A-Z]$", symbol):
                 self.errors.append(GeneError(GeneError.SYMBOL_NOT_ID, self, {'symbol': symbol}))
 
             else:
@@ -142,7 +142,7 @@ class Gene:
             gene_name = self.f.qualifiers['Name'][0]
             for child in self.f.sub_features:
                 if child.type == "mRNA":
-                    if len(child.qualifiers['Name'][0]) < len(gene_name) or not child.qualifiers['Name'][0].startswith(gene_name) or not re.match("^ [A-Z]{1,2}$", child.qualifiers['Name'][0][len(gene_name):]):
+                    if len(child.qualifiers['Name'][0]) < len(gene_name) or not child.qualifiers['Name'][0].startswith(gene_name) or not re.match("^-[A-Z]{1,2}$", child.qualifiers['Name'][0][len(gene_name):]):
                         self.errors.append(GeneError(GeneError.INVALID_MRNA_NAME, self, {'gene_name': gene_name}))
 
     def check_intron(self):
@@ -202,7 +202,7 @@ class Gene:
             elif '-like' in name.lower():
                 self.warnings.append(GeneError(GeneError.SIMILAR_TO, self, {'name': name}))
 
-            elif re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", name):
+            elif re.match("^[A-Za-z]{2,10}[0-9]{5,10}-R[A-Z]$", name):
                 self.errors.append(GeneError(GeneError.NAME_NOT_ID, self, {'name': name}))
 
             else:
@@ -214,7 +214,7 @@ class Gene:
             self.errors.append(GeneError(GeneError.DELETED_MISSING_NAME, self))
         else:
             self.name = self.f.qualifiers['Name'][0].strip()
-            if not re.match("^[A-Z]{2,3}[0-9]{5,8}-R[A-Z]$", self.name):
+            if not re.match("^[A-Za-z]{2,10}[0-9]{5,10}-R[A-Z]$", self.name):
                 self.errors.append(GeneError(GeneError.DELETED_WRONG_NAME, self, {'name': self.name}))
 
     def check_group(self, group):
