@@ -142,7 +142,7 @@ class Gene:
             gene_name = self.f.qualifiers['Name'][0]
             for child in self.f.sub_features:
                 if child.type == "mRNA":
-                    if len(child.qualifiers['Name'][0]) < len(gene_name) or not child.qualifiers['Name'][0].startswith(gene_name) or not re.match("^-[A-Z]{1,2}$", child.qualifiers['Name'][0][len(gene_name):]):
+                    if len(child.qualifiers['Name'][0]) < len(gene_name) or not child.qualifiers['Name'][0].startswith(gene_name) or not re.match("^ [A-Z]{1,2}$", child.qualifiers['Name'][0][len(gene_name):]):
                         self.errors.append(GeneError(GeneError.INVALID_MRNA_NAME, self, {'gene_name': gene_name}))
 
     def check_intron(self):
