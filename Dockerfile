@@ -1,4 +1,4 @@
-FROM php:7-apache
+FROM php:8.4-apache
 
 MAINTAINER Anthony Bretaudeau <anthony.bretaudeau@inra.fr>
 
@@ -25,7 +25,7 @@ RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks
  && cp cufflinks-2.2.1.Linux_x86_64/gffread /usr/bin/gffread \
  && rm -rf cufflinks-2.2.1.Linux_x86_64.tar.gz cufflinks-2.2.1.Linux_x86_64
 
-RUN pip3 install bcbio-gff biopython==1.80 apollo
+RUN pip3 install biopython bcbio-gff apollo --break-system-packages
 
 ENV APOLLO_URL="http://apollo:8080/" \
     APOLLO_USER="admin@apollo" \

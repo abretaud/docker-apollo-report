@@ -3,10 +3,7 @@
     $report_dict = json_decode($report_content, true);
     ksort($report_dict);
 
-    $user = $_SERVER['PHP_AUTH_USER'];
-    if (empty($user) && array_key_exists('HTTP_REMOTE_USER', $_SERVER)) {
-      $user = $_SERVER['HTTP_REMOTE_USER'];
-    }
+    $user = $_SERVER['HTTP_REMOTE_USER'] ?? $_SERVER['PHP_AUTH_USER'] ?? '';
 
     if (empty($user) || getenv("ALL_ADMINS") == "1") {
         $is_admin = true;
@@ -59,7 +56,7 @@ if ($is_admin) {
     $users_to_show = $report['genes_by_users'];
 }
 else {
-    $users_to_show = [$user => $report['genes_by_users'][$user]];
+    $users_to_show = [$user => ($report['genes_by_users'][$user] ?? [])];
 }
 
 $org_id = str_replace(' ', '_', $organism);

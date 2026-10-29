@@ -10,6 +10,7 @@ import unicodedata
 from BCBio import GFF
 
 from Bio import SeqIO
+from Bio.Seq import Seq
 
 from apollo import ApolloInstance
 
@@ -125,7 +126,7 @@ class WAChecker():
             recs = []
             for rec in GFF.parse(in_handle):
                 rec.annotations = {}
-                rec.seq = ""
+                rec.seq = Seq("")
                 new_feats = []
 
                 for f in rec.features:
@@ -156,7 +157,7 @@ class WAChecker():
             recs = []
             for rec in GFF.parse(in_handle):
                 rec.annotations = {}
-                rec.seq = ""
+                rec.seq = Seq("")
                 new_feats = []
 
                 for f in rec.features:
@@ -215,7 +216,7 @@ class WAChecker():
 
             for group in new_feats:
                 rec.annotations = {}
-                rec.seq = ""
+                rec.seq = Seq("")
                 newrec = copy.deepcopy(rec)
                 newrec.features = new_feats[group]
 
